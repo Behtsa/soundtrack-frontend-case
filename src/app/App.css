@@ -1,0 +1,23 @@
+.items-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 0 0.5rem;
+
+  img {
+    width: 3rem;
+    height: 3rem;
+    object-fit: contain;
+  }
+
+  h4 {
+    margin: 0;
+  }
+}

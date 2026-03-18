@@ -1,0 +1,10784 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscriptions
+}
+
+""""""
+type AIOnboardingBusiness {
+  """"""
+  name: String!
+
+  """"""
+  businessType: String!
+
+  """"""
+  subBusinessType: String!
+}
+
+""""""
+input AIOnboardingInput {
+  """"""
+  website: String!
+}
+
+""""""
+type AIOnboardingLocation {
+  """"""
+  name: String!
+
+  """"""
+  address: String!
+}
+
+""""""
+type AIOnboardingMusicTag {
+  """"""
+  name: String!
+}
+
+""""""
+type AIOnboardingResponse {
+  """"""
+  locations: [AIOnboardingLocation!]!
+
+  """"""
+  locationsCount: Int!
+
+  """"""
+  atmosphereTags: [AIOnboardingMusicTag!]!
+
+  """"""
+  genreTags: [AIOnboardingMusicTag!]!
+
+  """"""
+  business: AIOnboardingBusiness!
+}
+
+""""""
+type Accepted {
+  """"""
+  acceptedBy: User
+
+  """"""
+  acceptedAt: Instant!
+
+  """"""
+  termsType: TermsType!
+}
+
+""""""
+type Access {
+  """Lists active users"""
+  users(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+  ): AccountAccessUserConnection
+
+  """Lists invited users"""
+  pendingUsers(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+  ): AccountAccessPendingUserConnection
+}
+
+"""The actual business entity"""
+type Account implements Node {
+  """"""
+  id: ID!
+
+  """"""
+  isInCohorts(cohorts: [String!]!): [Boolean]! @deprecated(reason: "test")
+
+  """"""
+  potentialNumberOfLocations: PotentialLocationRange
+
+  """"""
+  previousMusicProvider: String
+
+  """This account's onboarding progress."""
+  onboardingSteps: [OnboardingStep!] @deprecated(reason: "EXPERIMENTAL: This feature is under development and can change at any time.")
+
+  """The library of this account"""
+  library: Library
+
+  """Everything related to billing."""
+  billing: Billing
+
+  """Find carts by account"""
+  carts(first: Int, last: Int, before: String, after: String, orderBy: CartsOrderInput! = {field: CREATED_AT, direction: DESC}): CartConnection
+
+  """Partner information."""
+  partner: Partner
+
+  """The name of the account."""
+  businessName: String!
+
+  """The business type for the account."""
+  businessType: String!
+
+  """In which country this account is located."""
+  country: IsoCountry!
+
+  """Account specific settings."""
+  settings: AccountSettings!
+
+  """Account image"""
+  image: Image!
+
+  """The users that can access the account"""
+  access: Access!
+
+  """The locations connected to this account."""
+  locations(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: AccountLocationOrderInput! = {field: NAME, direction: ASC}
+  ): AccountLocationConnection
+
+  """
+  The account's sound zones (the zones are also available under each location)
+  """
+  soundZones(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """Use filters instead"""
+    filter: SoundZoneFilter
+
+    """"""
+    filters: [SoundZoneFilter]
+
+    """"""
+    orderBy: [AccountSoundZoneOrderInput!]
+  ): AccountSoundZoneConnection
+
+  """Which subscription plan this account is on."""
+  plan: Plan!
+
+  """When the account was created."""
+  createdAt: Date!
+
+  """Information about which permissions current viewer has on the account."""
+  permissions: [AccountPermission!] @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Amount of sound zones under the account with a specified status."""
+  soundZoneStatuses: [AccountSoundZoneStatus!]
+
+  """Amount of sound zones under the account with a specified coubtry."""
+  soundZoneCountries: [AccountSoundZoneCountry!]
+
+  """Default settings for sound zones created under the account."""
+  soundZoneDefaults: SoundZoneSettings!
+
+  """Features the account has enabled."""
+  features: [AccountFeature!]!
+
+  """Which entitlements the account has enabled."""
+  entitlements: [AccountEntitlement!]!
+
+  """If the terms of service have been accepted for this account."""
+  legalAcceptance: LegalAcceptanceStatus
+
+  """
+  The sound zone used for onboarding. If the account is not in trial, it returns the first zone created.
+  """
+  onboardingSoundZone: SoundZone
+
+  """External ids linked to the account."""
+  externalIds: [AccountExternalId!]
+
+  """Music Library of this account."""
+  musicLibrary: MusicLibrary
+
+  """activity log for account."""
+  activityLog(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+  ): ActivityLogConnection
+}
+
+""""""
+type AccountAccessPendingUserConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [AccountAccessPendingUserEdge!]!
+
+  """Total number of PendingUser for this connection"""
+  total: Int!
+}
+
+""""""
+type AccountAccessPendingUserEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The PendingUser node for this edge"""
+  node: PendingUser!
+
+  """Is the invited user the contact person."""
+  contact: Boolean!
+
+  """The role that the invited user will get on the account."""
+  role: Role!
+}
+
+""""""
+type AccountAccessUserConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [AccountAccessUserEdge!]!
+
+  """Total number of User for this connection"""
+  total: Int!
+}
+
+""""""
+type AccountAccessUserEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The User node for this edge"""
+  node: User
+
+  """Is the user the contact person."""
+  contact: Boolean!
+
+  """The role that the user has on the account."""
+  role: Role!
+}
+
+""""""
+input AccountAddUserInput {
+  """"""
+  email: String!
+
+  """"""
+  accountId: ID!
+
+  """"""
+  role: Role!
+
+  """"""
+  contact: Boolean!
+}
+
+""""""
+type AccountAddUserPayload {
+  """"""
+  account: Account
+
+  """"""
+  user: User
+
+  """"""
+  pendingUser: PendingUser
+}
+
+"""Change plan cost information"""
+type AccountChangePlanCost {
+  """"""
+  netTotal: NetTotalCost
+
+  """"""
+  recurringNetTotal: NetTotalCost
+
+  """"""
+  entries: [CostEntries!]!
+
+  """"""
+  priceToken: String!
+}
+
+""""""
+type AccountChangePlanFailure {
+  """"""
+  changePlanFailureReason: String!
+}
+
+""""""
+type AccountChangePlanPayload {
+  """"""
+  accountChangePlanResult: AccountChangePlanResult!
+}
+
+""""""
+union AccountChangePlanResult = AccountChangePlanFailure | AccountChangePlanSuccess
+
+""""""
+type AccountChangePlanSuccess {
+  """"""
+  accountChangePlanSessionId: String!
+}
+
+enum AccountEntitlement {
+  """"""
+  HIFI
+
+  """"""
+  INTERACTIVE
+
+  """"""
+  MESSAGING
+
+  """"""
+  MULTIPLE_STREAMING_TYPES
+
+  """"""
+  SAML
+
+  """"""
+  SUPPORT
+}
+
+""""""
+type AccountEnums {
+  """"""
+  countries: [IsoCountry!]!
+
+  """"""
+  businessTypes: [String!]!
+}
+
+"""External system data linked to the account."""
+type AccountExternalId {
+  """"""
+  account: ID!
+
+  """"""
+  externalSystemName: String!
+
+  """"""
+  externalId: String!
+
+  """"""
+  linkedBy: ID!
+
+  """"""
+  linkedAt: String!
+}
+
+enum AccountFeature {
+  """"""
+  AFFILIATE
+
+  """"""
+  EXTERNAL_BILLING
+
+  """"""
+  FOLLOW_SPOTIFY_PLAYLISTS
+
+  """"""
+  PARTNER_PORTAL
+
+  """"""
+  RESELLER
+
+  """"""
+  SHOW_PRICES
+
+  """"""
+  TRACK_AVAILABILITY_TOOLBAR
+}
+
+enum AccountField {
+  """"""
+  BUSINESS_NAME
+}
+
+""""""
+type AccountLocationConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [AccountLocationEdge!]!
+
+  """"""
+  totalCount: Int! @deprecated(reason: "Use `total` instead")
+
+  """Total number of Location for this connection"""
+  total: Int!
+}
+
+""""""
+type AccountLocationEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The Location node for this edge"""
+  node: Location
+}
+
+""""""
+input AccountLocationOrderInput {
+  """"""
+  field: LocationField!
+
+  """"""
+  direction: Ordering!
+}
+
+enum AccountPermission {
+  """"""
+  BILLING_DETAILS_READ
+
+  """"""
+  BILLING_DETAILS_WRITE
+
+  """"""
+  CONTACT_DETAILS_READ
+
+  """"""
+  CONTACT_DETAILS_WRITE
+
+  """"""
+  LIBRARY_READ
+
+  """"""
+  LIBRARY_WRITE
+
+  """"""
+  LOCATION_CREATE
+
+  """"""
+  MESSAGES_READ
+
+  """"""
+  MESSAGES_WRITE
+
+  """"""
+  PLAYLIST_READ
+
+  """"""
+  PLAYLIST_WRITE
+
+  """"""
+  READ
+
+  """"""
+  SCHEDULE_READ
+
+  """"""
+  SCHEDULE_WRITE
+
+  """"""
+  SETTINGS_READ
+
+  """"""
+  SETTINGS_WRITE
+
+  """"""
+  SUBSCRIPTION_ACTIVATE
+
+  """"""
+  SUBSCRIPTION_CREATE
+
+  """"""
+  SUBSCRIPTION_DEACTIVATE
+
+  """"""
+  SUBSCRIPTION_READ
+
+  """"""
+  SUBSCRIPTION_WRITE
+
+  """"""
+  USERS_MANAGE
+
+  """"""
+  USERS_READ
+
+  """"""
+  USERS_WRITE
+
+  """"""
+  WRITE
+}
+
+""""""
+type AccountPublic {
+  """"""
+  id: ID!
+
+  """"""
+  businessName: String!
+}
+
+""""""
+input AccountRegisterInput {
+  """"""
+  businessName: String!
+
+  """"""
+  businessType: String!
+
+  """"""
+  country: IsoCountry!
+
+  """"""
+  plan: Plan!
+
+  """"""
+  billingCycle: BillingCycle!
+
+  """The user that will be owner of the new account."""
+  userId: ID
+
+  """True to indicate that the caller has read and accepts the legal terms."""
+  acceptLegalTerms: Boolean!
+
+  """"""
+  physicalAddress: AddressCreateInput
+
+  """"""
+  origin: RegisterAccountOrigin
+
+  """"""
+  voucherCode: String
+
+  """"""
+  recaptchaToken: String
+}
+
+""""""
+type AccountRegisterPayload {
+  """"""
+  account: Account!
+}
+
+""""""
+input AccountRemoveUserInput {
+  """"""
+  accountId: ID!
+
+  """"""
+  userId: ID!
+}
+
+""""""
+type AccountRemoveUserPayload {
+  """"""
+  account: Account
+}
+
+""""""
+type AccountSettingChangedActionData {
+  """"""
+  settingName: String!
+}
+
+"""Settings specific for this account"""
+type AccountSettings {
+  """Should all explicit tracks be filtered."""
+  filterExplicit: Boolean!
+
+  """Is it possible to block songs in apps."""
+  restrictBlockTracks: Boolean!
+
+  """Limit the music selection in apps."""
+  restrictDiscoverMusic: Boolean!
+
+  """
+  Limit editing of playlists in apps to only those created on the same device
+  """
+  restrictEditMusic: Boolean!
+
+  """Restrict unpairing from code-paired playback devices."""
+  restrictUnpairingFromPairedDevices: Boolean!
+
+  """Is the activity log enabled for this account."""
+  enableActivityLog: Boolean!
+}
+
+""""""
+input AccountSettingsInput {
+  """"""
+  filterExplicit: Boolean
+
+  """"""
+  restrictBlockTracks: Boolean
+
+  """"""
+  restrictDiscoverMusic: Boolean
+
+  """"""
+  restrictEditMusic: Boolean
+
+  """"""
+  restrictUnpairingFromPairedDevices: Boolean
+
+  """"""
+  enableActivityLog: Boolean
+}
+
+""""""
+type AccountSoundZoneConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [AccountSoundZoneEdge!]!
+
+  """"""
+  totalCount: Int! @deprecated(reason: "Use `total` instead")
+
+  """Total number of SoundZone for this connection"""
+  total: Int!
+}
+
+""""""
+type AccountSoundZoneCountry {
+  """"""
+  country: IsoCountry!
+
+  """"""
+  total: Int!
+}
+
+""""""
+type AccountSoundZoneEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The SoundZone node for this edge"""
+  node: SoundZone
+}
+
+enum AccountSoundZoneField {
+  """"""
+  CITY
+
+  """"""
+  COUNTRY
+
+  """"""
+  IS_PAIRED
+
+  """"""
+  LOCATION_NAME
+
+  """"""
+  NAME
+
+  """"""
+  PLATFORM
+}
+
+""""""
+input AccountSoundZoneOrderInput {
+  """"""
+  field: AccountSoundZoneField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type AccountSoundZoneStatus {
+  """"""
+  status: SoundZoneStatusState!
+
+  """"""
+  total: Int!
+}
+
+""""""
+type AccountSubscription {
+  """Latest subscription period start date."""
+  activeFrom: Date
+
+  """
+  Latest subscription period end date. If this date is in the past the subscription is expired.
+  """
+  activeTo: Date
+
+  """Trial period start date."""
+  trialStart: Date
+
+  """Trial period end date."""
+  trialEnd: Date
+
+  """All billing groups, including the default."""
+  items(first: Int, last: Int, before: String, after: String, orderBy: AccountSubscriptionItemOrderInput! = {field: CREATED_AT, direction: ASC}, itemType: ItemType): AccountSubscriptionItemConnection
+
+  """New billing plan to be activated on the next billing period."""
+  upcomingPlan: UpcomingPlan!
+
+  """Current Billing cycle"""
+  billingCycle: BillingCycle!
+
+  """Number of active streaming subscriptions on this account."""
+  activeStreamingSubscriptions: Int!
+
+  """"""
+  checkoutState: CheckoutState!
+
+  """
+  True if this account supports sound zones with different streaming types.
+  """
+  mixedTiers: Boolean!
+
+  """All streaming types allowed on this account."""
+  allowedStreamingTypes: [StreamingType!]
+}
+
+""""""
+type AccountSubscriptionItemConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [AccountSubscriptionItemEdge!]!
+
+  """"""
+  total: Int!
+}
+
+""""""
+type AccountSubscriptionItemEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: SubscriptionItem
+}
+
+""""""
+input AccountSubscriptionItemOrderInput {
+  """"""
+  field: SubscriptionItemField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type AccountTaxExemptForm {
+  """"""
+  deleted: Boolean!
+
+  """"""
+  companyName: String!
+
+  """"""
+  companyType: String!
+
+  """"""
+  businessDescription: String!
+
+  """"""
+  contactName: String!
+
+  """"""
+  contactPhone: String!
+
+  """"""
+  contactEmail: String!
+
+  """"""
+  address: Address!
+}
+
+""""""
+input AccountTaxExemptFormUpsertInput {
+  """"""
+  id: String!
+
+  """"""
+  form: TaxExemptFormUpsertInput!
+}
+
+""""""
+input AccountUpdateInput {
+  """"""
+  id: ID!
+
+  """"""
+  businessName: String
+
+  """"""
+  imageId: String
+
+  """"""
+  settings: AccountSettingsInput
+
+  """"""
+  soundZoneDefaults: SoundZoneSettingsInput
+}
+
+""""""
+type AccountUpdatePayload {
+  """"""
+  account: Account!
+}
+
+""""""
+input AccountUpdateSubscriptionInput {
+  """"""
+  account: ID!
+}
+
+""""""
+type AccountUpdateSubscriptionPayload {
+  """"""
+  account: Account!
+}
+
+""""""
+input AccountUpdateUserRolesInput {
+  """"""
+  accountId: ID!
+
+  """"""
+  userId: ID!
+
+  """"""
+  role: Role!
+
+  """"""
+  contact: Boolean!
+}
+
+""""""
+type AccountUpdateUserRolesPayload {
+  """"""
+  account: Account
+
+  """"""
+  user: User
+}
+
+""""""
+type ActivatedDiscount {
+  """"""
+  percentage: Float!
+
+  """"""
+  billingVoucher: String!
+
+  """"""
+  voucherCode: String!
+
+  """"""
+  voucherLabel: String!
+
+  """"""
+  validUntil: Instant!
+}
+
+""""""
+union ActivityLogActionData = AccountSettingChangedActionData
+
+enum ActivityLogActionType {
+  """"""
+  ACCOUNT_SETTING_CHANGED
+
+  """"""
+  BUSINESS_TYPE_CHANGED
+
+  """"""
+  DEVICE_PAIRED
+
+  """"""
+  DEVICE_UNPAIRED
+
+  """"""
+  IMAGE_CHANGED
+
+  """"""
+  NAME_CHANGED
+
+  """"""
+  PHONE_CHANGED
+
+  """"""
+  PLAY_FROM_CHANGED
+
+  """"""
+  TRACK_BLOCKED
+
+  """"""
+  TRACK_UNBLOCKED
+
+  """"""
+  UNKNOWN
+}
+
+""""""
+type ActivityLogActor {
+  """"""
+  entity: ActivityLogActorEntity!
+}
+
+""""""
+union ActivityLogActorEntity = ActivityLogUserActor | DeviceActor | InternalActor | UserActor
+
+""""""
+type ActivityLogConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [ActivityLogEdge!]!
+
+  """Total number of ActivityLogItem for this connection"""
+  total: Int!
+}
+
+""""""
+type ActivityLogDevice {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  type: String!
+
+  """"""
+  platform: String!
+
+  """"""
+  osVersion: String!
+
+  """"""
+  softwareVersion: String!
+}
+
+""""""
+type ActivityLogDiff {
+  """"""
+  type: ActivityLogDiffType!
+
+  """"""
+  diffEntity: ActivityLogDiffEntity!
+}
+
+""""""
+union ActivityLogDiffEntity = ActivityLogJSONDiff | ActivityLogReferenceDiff
+
+enum ActivityLogDiffType {
+  """"""
+  Json
+
+  """"""
+  Reference
+}
+
+""""""
+type ActivityLogEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The entity node for this edge"""
+  node: ActivityLogItem
+}
+
+""""""
+type ActivityLogItem {
+  """"""
+  id: ID!
+
+  """
+  When an activity was recorded. A date-time with time-zone in the ISO-8601 format.
+  """
+  timestamp: Date!
+
+  """"""
+  actor: ActivityLogActor
+
+  """"""
+  action: ActivityLogActionType!
+
+  """"""
+  description: String!
+
+  """"""
+  diff: ActivityLogDiff
+
+  """"""
+  actionData: ActivityLogActionData
+}
+
+""""""
+type ActivityLogJSONDiff {
+  """"""
+  old: JSON!
+
+  """"""
+  new: JSON!
+}
+
+""""""
+union ActivityLogReference = DeviceReference | PlaylistReference | ScheduleReference | TrackReference
+
+""""""
+type ActivityLogReferenceDiff {
+  """"""
+  old: ActivityLogReference
+
+  """"""
+  new: ActivityLogReference
+}
+
+""""""
+type ActivityLogUser {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  email: String!
+
+  """"""
+  image: Image!
+}
+
+""""""
+type ActivityLogUserActor {
+  """"""
+  user: ActivityLogUser
+}
+
+""""""
+input AddOnDeactivateInput {
+  """The id of the add-on to deactivate."""
+  addOnId: ID!
+}
+
+""""""
+type AddOnDeactivatePayload {
+  """"""
+  addOn: SubscriptionItem
+}
+
+""""""
+input AddOnReactivateInput {
+  """The id of the add-on to reactivate."""
+  addOnId: ID!
+}
+
+""""""
+type AddOnReactivatePayload {
+  """"""
+  addOn: SubscriptionItem
+}
+
+""""""
+input AddStreamingToCartInput {
+  """The cart to add line item to."""
+  cartId: ID!
+
+  """The sound zone to activate streaming for."""
+  soundZoneId: ID!
+
+  """Account billing cycle, can only be set if this is the first purchase."""
+  billingCycle: BillingCycle
+
+  """Account plan, can only be set if this is the first purchase."""
+  plan: Plan
+
+  """Streaming type for the zone being purchased"""
+  streamingType: StreamingType
+}
+
+""""""
+input AddToCartInput {
+  """The cart to add line item to."""
+  cartId: ID!
+
+  """Product id."""
+  product: ID!
+
+  """Quantity is mandatory if the product requires it."""
+  quantity: Int
+
+  """If missing, default billing group will be used."""
+  billingGroup: ID
+}
+
+""""""
+type AddToCartPayload {
+  """"""
+  cart: Cart!
+}
+
+""""""
+input AddToLibraryInput {
+  """
+  The library's version is updated on every change. Include in mutation to prevent overwriting unseen changes.
+  """
+  version: String = null
+
+  """List of items to add to the library."""
+  items: [LibraryItemInput!]!
+}
+
+""""""
+input AddToMusicLibraryInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+
+  """
+  Music libraries are identified by the owner/parent of the library. Currently the only supported parent kind is `Account`.
+  """
+  parent: ID!
+
+  """Which source (playlist or schedule) should be added?."""
+  source: ID!
+}
+
+""""""
+type AddToMusicLibraryPayload {
+  """
+  A unique identifier for the client performing the mutation. Use to match with the id passed to the input.
+  """
+  clientMutationId: String @deprecated(reason: "Will be ignored. Pending immediate removal.")
+
+  """The resulting music library."""
+  musicLibrary: MusicLibrary
+}
+
+""""""
+type Address {
+  """Address information."""
+  addressLine1: String!
+
+  """Extra address information."""
+  addressLine2: String!
+
+  """Postal code of the address."""
+  postalCode: String!
+
+  """City where the address resides."""
+  city: String!
+
+  """State where the address resides."""
+  state: String!
+
+  """Country code where the address resides, e.g SE."""
+  country: IsoCountry!
+
+  """Country name where the address resides, e.g Sweden."""
+  countryName: String!
+}
+
+""""""
+input AddressCreateInput {
+  """"""
+  addressLine1: String!
+
+  """"""
+  addressLine2: String
+
+  """"""
+  postalCode: String
+
+  """"""
+  city: String!
+
+  """"""
+  state: String
+
+  """"""
+  country: IsoCountry!
+}
+
+""""""
+input AddressUpdateInput {
+  """"""
+  addressLine1: String
+
+  """"""
+  addressLine2: String
+
+  """"""
+  postalCode: String
+
+  """"""
+  city: String
+
+  """"""
+  state: String
+}
+
+"""An album."""
+type Album implements Displayable & Node {
+  """Display of the album."""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """Title of the album."""
+  title: String!
+
+  """"""
+  name: String! @deprecated(reason: "Replaced by `title`")
+
+  """Type of the album. Examples: `single` or `album`."""
+  albumType: AlbumType
+
+  """"""
+  image: OldImage @deprecated(reason: "Replaced by `images`")
+
+  """"""
+  images: [OldImage!] @deprecated(reason: "Replaced by `display`")
+
+  """"""
+  colors: ColorPair @deprecated(reason: "Replaced by `display`")
+
+  """Copyright statements of the album."""
+  copyrights: [Copyright!]
+
+  """Number of tracks of the album."""
+  numberOfTracks: Int
+
+  """
+  `true` if album contains any explicit tracks. `false` indicates no explicit tracks, or unknown
+  """
+  explicit: Boolean
+
+  """The markets where the album is licensed for playback."""
+  availableMarkets: [IsoCountry!]
+
+  """`true` if the album is licensed for playback in a particular market"""
+  isAvailable(market: IsoCountry!): Boolean
+
+  """Artists of the album."""
+  artists: [Artist!]
+
+  """Tracks of the album."""
+  tracks(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """"""
+    market: IsoCountry
+  ): TracksConnection
+
+  """Release date of the album."""
+  releaseDate: ReleaseDate
+}
+
+""""""
+type AlbumTracksEdge {
+  """The track node for this edge"""
+  node: Track!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """
+  The track number. For albums with multiple discs, this refers to the track's position on its respective disc.
+  """
+  trackNumber: Int!
+
+  """
+  The disc number, which is typically 1 unless the album includes multiple discs.
+  """
+  discNumber: Int!
+}
+
+enum AlbumType {
+  """An album."""
+  album
+
+  """A compilation."""
+  compilation
+
+  """A single."""
+  single
+
+  """Unspecified by the issuer."""
+  unspecified
+}
+
+""""""
+type AlbumsConnection {
+  """Total number of albums for this connection"""
+  total: Int!
+
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [AlbumsEdge!]!
+}
+
+""""""
+type AlbumsEdge {
+  """The album node for this edge"""
+  node: Album!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+}
+
+""""""
+type Announcement {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  account: Account!
+
+  """"""
+  audio: Track!
+
+  """"""
+  parts: [AnnouncementPart!]!
+
+  """"""
+  archived: Boolean!
+
+  """"""
+  createdAt: DateTime!
+
+  """"""
+  updatedAt: DateTime!
+}
+
+""""""
+type AnnouncementCampaign {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  account: Account!
+
+  """"""
+  announcementGroups: [AnnouncementGroup!]!
+
+  """"""
+  createdAt: DateTime!
+
+  """"""
+  updatedAt: DateTime!
+
+  """"""
+  archived: Boolean!
+
+  """"""
+  startDate: DateTime
+
+  """"""
+  endDate: DateTime
+
+  """"""
+  soundZonesAssignedTo: [SoundZone]!
+}
+
+""""""
+input AnnouncementCampaignAssignmentInput {
+  """"""
+  campaignId: ID!
+
+  """"""
+  soundZoneIds: [ID!]!
+}
+
+""""""
+type AnnouncementCampaignAssignments {
+  """"""
+  campaign: AnnouncementCampaign!
+
+  """"""
+  soundZone: [SoundZone!]!
+}
+
+""""""
+input AnnouncementCampaignCreateInput {
+  """"""
+  name: String!
+
+  """"""
+  accountId: String!
+
+  """"""
+  announcementGroups: [AnnouncementGroupCreateInput!]
+
+  """"""
+  dates: AnnouncementCampaignDatesInput = null
+}
+
+""""""
+input AnnouncementCampaignDatesInput {
+  """"""
+  startDate: DateTime = null
+
+  """"""
+  endDate: DateTime = null
+}
+
+""""""
+input AnnouncementCampaignUpdateInput {
+  """"""
+  campaignId: ID!
+
+  """"""
+  name: String = null
+
+  """"""
+  announcementGroups: [AnnouncementGroupUpdateInput!] = null
+
+  """"""
+  dates: AnnouncementCampaignDatesInput = null
+
+  """"""
+  archived: Boolean = null
+}
+
+""""""
+type AnnouncementGroup {
+  """"""
+  id: ID!
+
+  """"""
+  announcements: [Announcement!]!
+
+  """"""
+  scheduleCron: String!
+
+  """"""
+  interruptMusic: Boolean
+
+  """"""
+  executionMode: AnnouncementGroupExecutionModes
+}
+
+""""""
+input AnnouncementGroupCreateInput {
+  """"""
+  announcementIds: [ID!]!
+
+  """"""
+  scheduleCron: String!
+
+  """"""
+  executionMode: AnnouncementGroupExecutionModes = RANDOM
+
+  """"""
+  interruptMusic: Boolean = true
+}
+
+enum AnnouncementGroupExecutionModes {
+  """"""
+  RANDOM
+
+  """"""
+  SEQUENTIAL
+}
+
+""""""
+input AnnouncementGroupUpdateInput {
+  """"""
+  id: ID = null
+
+  """"""
+  announcementIds: [ID!]!
+
+  """"""
+  scheduleCron: String!
+
+  """"""
+  executionMode: AnnouncementGroupExecutionModes = RANDOM
+
+  """"""
+  interruptMusic: Boolean = true
+}
+
+""""""
+input AnnouncementInput {
+  """"""
+  accountId: String!
+
+  """"""
+  name: String!
+
+  """"""
+  isPreview: Boolean = false
+
+  """"""
+  parts: [AnnouncementPartInput!]!
+}
+
+enum AnnouncementLoudness {
+  """"""
+  ANNOUNCEMENT_LOUDNESS_LOWER_THAN_MUSIC
+
+  """"""
+  ANNOUNCEMENT_LOUDNESS_SAME_AS_MUSIC
+
+  """"""
+  ANNOUNCEMENT_LOUDNESS_LOUDER_THAN_MUSIC
+}
+
+""""""
+type AnnouncementPart {
+  """"""
+  audioPath: String
+
+  """"""
+  text: String
+
+  """"""
+  ssml: String
+
+  """"""
+  language: String
+
+  """"""
+  gender: String
+
+  """"""
+  speed: Float
+
+  """"""
+  pitch: Float
+
+  """"""
+  loudness: AnnouncementLoudness
+
+  """"""
+  offsetDB: Int
+}
+
+""""""
+input AnnouncementPartInput {
+  """"""
+  audioPath: String = null
+
+  """"""
+  text: String = null
+
+  """"""
+  ssml: String = null
+
+  """"""
+  language: String = "en-US"
+
+  """"""
+  gender: String = "female"
+
+  """"""
+  speed: Float = 1
+
+  """"""
+  pitch: Float = 1
+
+  """"""
+  loudness: AnnouncementLoudness = null
+
+  """"""
+  offsetDB: Int = 0
+}
+
+""""""
+input AnnouncementUpdateInput {
+  """"""
+  name: String = null
+
+  """"""
+  parts: [AnnouncementPartInput!]!
+
+  """"""
+  archived: Boolean = null
+}
+
+""""""
+type AnnouncementUploadRequest {
+  """"""
+  url: String!
+
+  """"""
+  headers: [AnnouncementUploadRequestHeaders!]!
+}
+
+""""""
+type AnnouncementUploadRequestHeaders {
+  """"""
+  key: String!
+
+  """"""
+  value: String!
+}
+
+""""""
+type AppliedDiscount {
+  """"""
+  name: String!
+
+  """"""
+  originalPrices: [Float!]!
+
+  """"""
+  validUntil: Instant!
+}
+
+"""An artist."""
+type Artist implements Displayable & Node {
+  """Display of the artist."""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """Name of the artist."""
+  name: String!
+
+  """"""
+  station: Playlist @deprecated(reason: "Replaced by `editorialArtist`")
+
+  """"""
+  images: [OldImage!] @deprecated(reason: "Replaced by `display.image`. See display.image.sizes for predefined sizes.")
+
+  """"""
+  imageUrl: String @deprecated(reason: "Replaced by `display.image`. See display.image.sizes for predefined sizes.")
+
+  """Albums released by the artist."""
+  albums(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """
+    The albums types to return. If left empty or omitted it will return all types.
+    """
+    albumType: [AlbumType!]
+
+    """
+    If provided it will only return albums licensed for playback in the particular market.
+    """
+    market: IsoCountry
+  ): AlbumsConnection
+
+  """Tracks by the artist."""
+  tracks(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """
+    If provided it will only return tracks licensed for playback in the particular market.
+    """
+    market: IsoCountry
+
+    """
+    Determine the order of the tracks returns. Examples: `recognizability`.
+    """
+    sortBy: TracksForArtistSort = recognizability
+  ): ArtistTracksConnection
+
+  """
+  Recognizability of this artist `[0,100]`.
+    Where `100` is very recognizable and `0` is either not so recognizable or unknown status
+  """
+  recognizability: Int
+}
+
+"""
+Used for playlists created with tracks inspired by an artist. The playlist will
+include tracks from the artist and similar tracks from other artists.
+"""
+type ArtistComposer {
+  """"""
+  artist: Artist!
+
+  """The variant of the artist playlist."""
+  variant: ArtistPlaylistVariant!
+
+  """The permissions associated with this composer."""
+  permissions: [ArtistComposerPermission!]
+}
+
+enum ArtistComposerPermission {
+  """"""
+  WRITE
+}
+
+""""""
+type ArtistPage implements EditorialPage {
+  """"""
+  id: ID!
+
+  """"""
+  sections(first: Int = null, last: Int = null, after: String = null, before: String = null): EditorialSectionConnection!
+
+  """The artist for this page"""
+  artist: Artist!
+
+  """The "Best of" playlist for the artist"""
+  bestOfPlaylist: Playlist
+
+  """The page title"""
+  title: String
+}
+
+""""""
+type ArtistPageEditorialSection implements EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+}
+
+enum ArtistPlaylistVariant {
+  """
+  And more artist playlists contains songs from the main artist and similar songs, artists and albums.
+  """
+  AND_MORE
+
+  """
+  Best of artist playlists contains the most popular songs from the main artist.
+  """
+  BEST_OF
+}
+
+""""""
+type ArtistTracksConnection {
+  """Total number of tracks for this connection"""
+  total: Int!
+
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [TracksEdge!]!
+}
+
+""""""
+interface Assignable {
+  """
+  `true` if this playlist is in the specified music library or false if not.
+  """
+  inMusicLibrary(library: ID!): Boolean
+}
+
+"""Audio details about a track."""
+type Audio {
+  """Audio analysis about a track."""
+  analysis: AudioAnalysis
+}
+
+""""""
+type AudioAnalysis {
+  """"""
+  durationMs: Int!
+
+  """"""
+  sampleRate: Int!
+
+  """"""
+  loudness: Loudness!
+}
+
+enum AudioFormat {
+  """AAC format."""
+  AAC
+
+  """Ogg Vorbis format."""
+  OGG_VORBIS
+}
+
+enum AudioQuality {
+  """Extreme audio quality."""
+  EXTREME
+
+  """High audio quality."""
+  HIGH
+
+  """Low audio quality."""
+  LOW
+
+  """Normal audio quality."""
+  NORMAL
+}
+
+""""""
+type Billing {
+  """The payment method used to charge this account."""
+  paymentMethod: PaymentMethod
+
+  """The default billing group that is guaranteed to exist."""
+  defaultGroup: BillingGroup
+
+  """All billing groups, including the default."""
+  groups(first: Int, last: Int, before: String, after: String, orderBy: BillingBillingGroupOrderInput! = {field: NAME, direction: ASC}): BillingBillingGroupConnection
+
+  """Account subscription status and period."""
+  subscription: AccountSubscription
+
+  """Voucher linked to the account."""
+  voucher: BillingVoucher
+}
+
+""""""
+type BillingBillingGroupConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [BillingBillingGroupEdge!]!
+
+  """"""
+  total: Int!
+}
+
+""""""
+type BillingBillingGroupEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: BillingGroup
+}
+
+""""""
+input BillingBillingGroupOrderInput {
+  """"""
+  field: BillingGroupField!
+
+  """"""
+  direction: Ordering!
+}
+
+enum BillingCycle {
+  """"""
+  MONTHLY
+
+  """"""
+  NOT_SET
+
+  """"""
+  QUARTERLY
+
+  """"""
+  YEARLY
+}
+
+""""""
+union BillingCycleResult = BillingCycleUpdateFailure | BillingCycleUpdateSuccess
+
+""""""
+type BillingCycleUpdateFailure {
+  """"""
+  updateBillingCycleFailureReason: String!
+}
+
+""""""
+type BillingCycleUpdatePayload {
+  """"""
+  updateBillingCycleResult: BillingCycleResult!
+}
+
+""""""
+type BillingCycleUpdateSuccess {
+  """"""
+  account: String!
+
+  """"""
+  billingCycle: String!
+
+  """"""
+  changeAt: String!
+}
+
+"""Billing information"""
+type BillingGroup {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  address: Address!
+
+  """Currency used when paying. All purchases will be in this currency."""
+  currency: Currency!
+
+  """"""
+  vatCode: String!
+
+  """"""
+  orgNumber: String!
+
+  """Your invoice reference. Will be added to all invoices."""
+  invoiceRef: String!
+
+  """Optional tax exemption form submitted for this Billing Group."""
+  taxExemptForm: AccountTaxExemptForm
+
+  """"""
+  email: String!
+}
+
+enum BillingGroupField {
+  """"""
+  NAME
+}
+
+""""""
+input BillingGroupUpdateInput {
+  """"""
+  id: ID!
+
+  """"""
+  name: String
+
+  """"""
+  address: AddressUpdateInput
+
+  """"""
+  currency: Currency
+
+  """"""
+  vatCode: String
+
+  """"""
+  orgNumber: String
+
+  """"""
+  invoiceRef: String
+}
+
+""""""
+type BillingGroupUpdatePayload {
+  """"""
+  billingGroup: BillingGroup!
+}
+
+"""Product information"""
+type BillingProduct {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  externalKey: String!
+
+  """"""
+  recurring: Boolean!
+
+  """"""
+  quantitySource: String!
+
+  """"""
+  itemType: String!
+
+  """"""
+  enabled: Boolean!
+
+  """"""
+  selfService: Boolean!
+
+  """"""
+  addOn: Boolean!
+
+  """"""
+  translationKey: String!
+}
+
+""""""
+type BillingVoucher {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  label: String!
+}
+
+enum BitRate {
+  """"""
+  extreme
+
+  """"""
+  high
+
+  """"""
+  low
+
+  """"""
+  normal
+}
+
+""""""
+input BlockTrackInput {
+  """id of the sound zone."""
+  parent: ID!
+
+  """id of the track to block."""
+  source: ID!
+
+  """id of the current playlist."""
+  playFrom: ID
+
+  """why you're blocking this track."""
+  reasons: [Reason!]!
+}
+
+""""""
+type BlockTrackPayload {
+  """id of the sound zone."""
+  parent: ID!
+
+  """id of the track that was blocked."""
+  source: ID!
+
+  """Info about the track that was blocked."""
+  blockedTrack: BlockedTrack!
+}
+
+""""""
+type BlockedTrack {
+  """"""
+  id: ID!
+
+  """"""
+  trackId: ID! @deprecated(reason: "Replaced by `track.id`")
+
+  """The track that is blocked."""
+  track(market: IsoCountry): Track
+
+  """
+  When the track was blocked. A date-time with time-zone in the ISO-8601 format.
+  """
+  at: Date!
+
+  """Why this track was blocked."""
+  reasons: [Reason!]!
+
+  """The play from source this track was played from when it was blocked."""
+  playFrom: PlaybackSource
+}
+
+""""""
+type BlockedTrackConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [BlockedTrackEdge!]!
+}
+
+""""""
+type BlockedTrackEdge {
+  """The blocked track node for this edge"""
+  node: BlockedTrack!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+}
+
+""""""
+type BrowseCategory implements Displayable & Node {
+  """"""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """"""
+  slug: String!
+
+  """"""
+  name: String!
+
+  """"""
+  type: BrowseCategoryType!
+
+  """"""
+  color: String!
+
+  """"""
+  image: BrowseCategoryImages!
+
+  """"""
+  playlists(first: Int = null, last: Int = null, after: String = null, before: String = null): BrowseCategoryPlaylistsConnection!
+}
+
+""""""
+type BrowseCategoryDisplayableConnection {
+  """"""
+  total: Int!
+
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [BrowseCategoryDisplayableEdge!]!
+}
+
+""""""
+type BrowseCategoryDisplayableEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: BrowseCategory!
+}
+
+""""""
+type BrowseCategoryImages {
+  """"""
+  small: ImageUrl!
+
+  """"""
+  medium: ImageUrl!
+
+  """"""
+  large: ImageUrl!
+}
+
+""""""
+type BrowseCategoryPlaylistsConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [PlaylistsEdge!]!
+}
+
+enum BrowseCategoryType {
+  """"""
+  category
+
+  """"""
+  chart
+
+  """"""
+  genre
+
+  """"""
+  sound
+
+  """"""
+  business
+
+  """"""
+  energy
+
+  """"""
+  decade
+
+  """"""
+  unknown
+}
+
+""""""
+type BrowseEditorialSection implements EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+
+  """"""
+  description: String
+}
+
+""""""
+type BrowsePage implements EditorialPage {
+  """"""
+  id: ID!
+
+  """"""
+  sections(first: Int = null, last: Int = null, after: String = null, before: String = null): EditorialSectionConnection!
+
+  """"""
+  tabs: [EditorialLink!]!
+
+  """"""
+  title: String!
+
+  """"""
+  headerImage: String!
+
+  """"""
+  browseCategory: BrowseCategory!
+}
+
+""""""
+type CancellationReason {
+  """"""
+  id: ID!
+
+  """"""
+  soundZoneId: ID!
+
+  """"""
+  name: CancellationReasonName!
+
+  """"""
+  text: String!
+
+  """"""
+  detailedText: String!
+
+  """"""
+  feedback: String!
+}
+
+enum CancellationReasonName {
+  """"""
+  AUTOPAY_FAILED
+
+  """"""
+  AUTOPAY_FAILED_STILL_RETRYING
+
+  """"""
+  BUSINESS_RELATED
+
+  """"""
+  COST
+
+  """"""
+  NOT_NEEDED
+
+  """"""
+  OTHER
+
+  """"""
+  OVERDUE_INVOICE
+
+  """"""
+  PAYMENT
+
+  """"""
+  SERVICE
+
+  """"""
+  TECHNICAL
+
+  """"""
+  TRIAL
+
+  """"""
+  USER_DEFINED
+}
+
+""""""
+type Cart {
+  """"""
+  id: ID!
+
+  """"""
+  accountId: ID!
+
+  """"""
+  currentRecurrence: String!
+
+  """"""
+  checkedOut: Boolean!
+
+  """"""
+  deleted: Boolean!
+
+  """"""
+  lineItems: [LineItem!]!
+
+  """"""
+  totals: [CartTotal!]!
+
+  """"""
+  recurringTotals: [CartTotal!]!
+}
+
+""""""
+type CartCheckoutAsyncPayload {
+  """"""
+  cartCheckoutAsyncResult: CartCheckoutAsyncResult!
+}
+
+""""""
+union CartCheckoutAsyncResult = CartCheckoutAsyncSuccess | CartCheckoutFailure
+
+""""""
+type CartCheckoutAsyncSuccess {
+  """"""
+  checkoutSessionId: String!
+}
+
+""""""
+type CartCheckoutFailure {
+  """"""
+  checkoutFailureReason: CheckoutFailureReason!
+}
+
+""""""
+input CartCheckoutInput {
+  """The cart to check out."""
+  cartId: ID!
+
+  """True to accept legal terms"""
+  legalAcceptance: Boolean!
+
+  """The type of legal terms accepted"""
+  termsType: TermsType!
+}
+
+""""""
+type CartCheckoutPayload {
+  """"""
+  cartCheckoutResult: CartCheckoutResult!
+}
+
+""""""
+union CartCheckoutResult = CartCheckoutFailure | CartCheckoutSuccess
+
+""""""
+type CartCheckoutSuccess {
+  """"""
+  cart: Cart!
+}
+
+""""""
+type CartConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [CartEdge!]!
+
+  """"""
+  total: Int!
+}
+
+""""""
+input CartCreateInput {
+  """The account to create a cart for."""
+  accountId: ID!
+}
+
+""""""
+type CartCreatePayload {
+  """"""
+  cart: Cart!
+}
+
+""""""
+type CartEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: Cart
+}
+
+enum CartField {
+  """"""
+  CREATED_AT
+}
+
+""""""
+input CartLineItemUpdateInput {
+  """"""
+  id: ID!
+
+  """"""
+  quantity: Int!
+}
+
+""""""
+type CartTotal {
+  """"""
+  currency: Currency!
+
+  """Total price per month"""
+  total: Float!
+}
+
+""""""
+type CartUpdatePayload {
+  """"""
+  cart: Cart!
+}
+
+""""""
+input CartsOrderInput {
+  """"""
+  field: CartField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type CatalystPlaylistOutput {
+  """"""
+  playlists: [Playlist!]!
+
+  """"""
+  trackingId: String
+}
+
+""""""
+type ChangePlanSession {
+  """"""
+  changePlanSessionResult: ChangePlanSessionResult!
+}
+
+""""""
+type ChangePlanSessionCancelled {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type ChangePlanSessionFailure {
+  """"""
+  failureReason: String!
+}
+
+""""""
+type ChangePlanSessionPending {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+union ChangePlanSessionResult = ChangePlanSessionCancelled | ChangePlanSessionFailure | ChangePlanSessionPending | ChangePlanSessionSuccessImmediate | ChangePlanSessionSuccessScheduled
+
+""""""
+type ChangePlanSessionSuccessImmediate {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type ChangePlanSessionSuccessScheduled {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+enum CheckoutFailureReason {
+  """"""
+  AccountNotActive
+
+  """"""
+  BillingCycleChangeNotAllowed
+
+  """"""
+  CardNotPermitted
+
+  """"""
+  CardNotSupported
+
+  """"""
+  CardRestricted
+
+  """"""
+  CartAlreadyCheckedOut
+
+  """"""
+  CartBeingCheckedOut
+
+  """"""
+  CartDeleted
+
+  """"""
+  CartModified
+
+  """"""
+  Declined3DSecure
+
+  """"""
+  DeclinedBadAddress
+
+  """"""
+  DeclinedBadCVC
+
+  """"""
+  DeclinedBadCVCLength
+
+  """"""
+  DeclinedBadExpiration
+
+  """"""
+  DeclinedBadNumber
+
+  """"""
+  DeclinedBlockedCard
+
+  """"""
+  DeclinedExpired
+
+  """"""
+  DeclinedFraud
+
+  """"""
+  DeclinedInvalidCard
+
+  """"""
+  DeclinedNoFunds
+
+  """"""
+  DeclinedNonGeneric
+
+  """"""
+  LocationDeactivated
+
+  """"""
+  MixedTiersNotSupported
+
+  """"""
+  NoPaymentMethod
+
+  """"""
+  OngoingRecur
+
+  """"""
+  OnlyOneTrialPurchaseAllowed
+
+  """"""
+  PlanChangeNotAllowed
+
+  """"""
+  PriceHasChanged
+
+  """"""
+  SoundZoneAlreadyActive
+
+  """"""
+  SoundZoneDeactivated
+
+  """"""
+  StreamingTypeChangeAlreadyRequested
+
+  """"""
+  StreamingTypeNotAllowed
+
+  """"""
+  TrialNeedsIsolatedCart
+
+  """"""
+  Unspecified
+}
+
+""""""
+type CheckoutSession {
+  """"""
+  id: ID!
+
+  """"""
+  checkoutSessionResult: CheckoutSessionResult!
+}
+
+""""""
+type CheckoutSessionCancelled {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type CheckoutSessionFailed {
+  """"""
+  checkoutFailureReason: CheckoutFailureReason!
+}
+
+""""""
+type CheckoutSessionPending {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+union CheckoutSessionResult = CheckoutSessionCancelled | CheckoutSessionFailed | CheckoutSessionPending | CheckoutSessionSuccess
+
+""""""
+type CheckoutSessionSuccess {
+  """"""
+  pays_until: Instant
+}
+
+enum CheckoutState {
+  """"""
+  COMPLETED
+
+  """"""
+  READY
+
+  """"""
+  SETUP
+}
+
+""""""
+type Color {
+  """"""
+  hex: HexColor
+}
+
+"""A pair of complementary colors."""
+type ColorPair {
+  """"""
+  primary: String
+
+  """"""
+  accent: String
+}
+
+""""""
+type Colors {
+  """"""
+  primary: Color
+
+  """"""
+  secondary: Color
+}
+
+""""""
+type Coordinates {
+  """"""
+  latitude: Float!
+
+  """"""
+  longitude: Float!
+}
+
+"""A copyright statement."""
+type Copyright {
+  """The copyright text for this content."""
+  text: String
+
+  """The type of copyright. Examples: (P) and (C)."""
+  type: CopyrightType!
+}
+
+enum CopyrightType {
+  """The copyright, or copyright sign, © (letter C in a circle)."""
+  c
+
+  """The sound recording copyright or phonogram, ℗ (letter P in a circle)."""
+  p
+
+  """Unspecified by the issuer."""
+  unspecified
+}
+
+""""""
+type CostEntries {
+  """"""
+  soundZoneName: String!
+
+  """"""
+  soundZone: String!
+
+  """"""
+  netAmount: Float!
+
+  """"""
+  period: PlanPeriod
+}
+
+""""""
+type CreateAffiliatePartnerResponse {
+  """ID of the created affiliate partner"""
+  id: String!
+}
+
+""""""
+input CreateManualPlaylistInput {
+  """ID of who should own the playlist."""
+  ownerId: ID!
+
+  """The name of the playlist."""
+  name: String!
+
+  """A longer description of the playlist"""
+  description: String
+
+  """A short description of the playlist used where the UI space is tight"""
+  shortDescription: String
+
+  """How the playlist should be played back by default."""
+  playbackMode: PlaybackMode
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """List of tracks that should be part of the playlist."""
+  trackIds: [ID!]
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input CreatePlaylistInput {
+  """ID of who should own the playlist."""
+  ownerId: ID!
+
+  """The name of the playlist."""
+  name: String!
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input CreateScheduleInput {
+  """"""
+  ownerId: ID!
+
+  """Name of the schedule."""
+  name: String!
+
+  """A long description of the schedule. Not set for all schedules."""
+  description: String
+
+  """
+  A short description of the schedule used where the UI space is tight. Not set for all schedules.
+  """
+  shortDescription: String
+
+  """"""
+  color: String
+
+  """
+  How the schedule should be presented, as a weekly schedule or a daily schedule. Allowed values are `weekly` and `daily`, weekly is default.
+  """
+  presentAs: String
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  The time slots for the schedule. A time slot describes what music should play during what hours on a specific day of week.
+  """
+  slots: [SlotInput!]
+
+  """
+  List of key-value annotations that can be attributed with the schedule. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input CreateSpotifySyncedPlaylistInput {
+  """ID of who should own the playlist."""
+  ownerId: ID!
+
+  """
+  A (public) spotify playlist uri for which the playlist should synced to.
+  """
+  playlistUri: String!
+
+  """The name of the playlist."""
+  name: String
+
+  """A longer description of the playlist"""
+  description: String
+
+  """A short description of the playlist used where the UI space is tight"""
+  shortDescription: String
+
+  """How the playlist should be played back by default."""
+  playbackMode: PlaybackMode
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+type CreateSpotifySyncedPlaylistPayload {
+  """The newly created playlist."""
+  playlist: Playlist!
+}
+
+""""""
+input CreateStationFromPlaylistInput {
+  """ID of who should own the station."""
+  ownerId: ID!
+
+  """The name of the station."""
+  name: String
+
+  """A longer description of the station"""
+  description: String
+
+  """A short description of the station used where the UI space is tight"""
+  shortDescription: String
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  A (public spotify) playlist uri for which the station should be based on.
+  """
+  playlistUri: String!
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+type CreateStationFromPlaylistPayload {
+  """The newly created playlist."""
+  playlist: Playlist!
+}
+
+""""""
+input CreateStationFromPromptInput {
+  """"""
+  tracks: [String!]!
+
+  """"""
+  name: String!
+
+  """"""
+  prompt: String!
+}
+
+""""""
+type CreateStationFromPromptResult {
+  """"""
+  playlist: Playlist!
+}
+
+""""""
+input CreateStationFromTagsInput {
+  """"""
+  owner: String!
+
+  """"""
+  name: String!
+
+  """"""
+  filters: [MusicTagInputFilter!]
+
+  """"""
+  market: IsoCountry!
+}
+
+""""""
+type CreateStationFromTagsPayload {
+  """"""
+  playlist: Playlist!
+}
+
+enum CreditCardType {
+  """"""
+  AmericanExpress
+
+  """"""
+  DinersClub
+
+  """"""
+  Discover
+
+  """"""
+  MasterCard
+
+  """"""
+  OtherCardType
+
+  """"""
+  Visa
+}
+
+"""Crossfade can represent values between 0 and 10."""
+scalar Crossfade
+
+"""
+A curator is the entity that selects music. It may be a real person
+or a company. A curator is automatically created for each account
+and will be set on manual playlists of that account.
+
+The curator object contains the information that is publicly
+shown when e.g a schedule or playlist from an account is shared.
+"""
+type Curator implements Node {
+  """The curator's ID."""
+  id: ID!
+
+  """The curator's name."""
+  name: String!
+
+  """The curator's account ID"""
+  accountId: ID!
+}
+
+"""Used for playlists that are managed by a curator."""
+type CuratorComposer {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+enum Currency {
+  """"""
+  AED
+
+  """"""
+  AFN
+
+  """"""
+  ALL
+
+  """"""
+  AMD
+
+  """"""
+  ANG
+
+  """"""
+  AOA
+
+  """"""
+  ARS
+
+  """"""
+  AUD
+
+  """"""
+  AWG
+
+  """"""
+  AZN
+
+  """"""
+  BAM
+
+  """"""
+  BBD
+
+  """"""
+  BDT
+
+  """"""
+  BGN
+
+  """"""
+  BHD
+
+  """"""
+  BIF
+
+  """"""
+  BMD
+
+  """"""
+  BND
+
+  """"""
+  BOB
+
+  """"""
+  BOV
+
+  """"""
+  BRL
+
+  """"""
+  BSD
+
+  """"""
+  BTN
+
+  """"""
+  BWP
+
+  """"""
+  BYN
+
+  """"""
+  BZD
+
+  """"""
+  CAD
+
+  """"""
+  CDF
+
+  """"""
+  CHE
+
+  """"""
+  CHF
+
+  """"""
+  CHW
+
+  """"""
+  CLF
+
+  """"""
+  CLP
+
+  """"""
+  CNY
+
+  """"""
+  COP
+
+  """"""
+  COU
+
+  """"""
+  CRC
+
+  """"""
+  CUC
+
+  """"""
+  CUP
+
+  """"""
+  CVE
+
+  """"""
+  CZK
+
+  """"""
+  DJF
+
+  """"""
+  DKK
+
+  """"""
+  DOP
+
+  """"""
+  DZD
+
+  """"""
+  EGP
+
+  """"""
+  ERN
+
+  """"""
+  ETB
+
+  """"""
+  EUR
+
+  """"""
+  FJD
+
+  """"""
+  FKP
+
+  """"""
+  GBP
+
+  """"""
+  GEL
+
+  """"""
+  GHS
+
+  """"""
+  GIP
+
+  """"""
+  GMD
+
+  """"""
+  GNF
+
+  """"""
+  GTQ
+
+  """"""
+  GYD
+
+  """"""
+  HKD
+
+  """"""
+  HNL
+
+  """"""
+  HTG
+
+  """"""
+  HUF
+
+  """"""
+  IDR
+
+  """"""
+  ILS
+
+  """"""
+  INR
+
+  """"""
+  IQD
+
+  """"""
+  IRR
+
+  """"""
+  ISK
+
+  """"""
+  JMD
+
+  """"""
+  JOD
+
+  """"""
+  JPY
+
+  """"""
+  KES
+
+  """"""
+  KGS
+
+  """"""
+  KHR
+
+  """"""
+  KMF
+
+  """"""
+  KPW
+
+  """"""
+  KRW
+
+  """"""
+  KWD
+
+  """"""
+  KYD
+
+  """"""
+  KZT
+
+  """"""
+  LAK
+
+  """"""
+  LBP
+
+  """"""
+  LKR
+
+  """"""
+  LRD
+
+  """"""
+  LSL
+
+  """"""
+  LYD
+
+  """"""
+  MAD
+
+  """"""
+  MDL
+
+  """"""
+  MGA
+
+  """"""
+  MKD
+
+  """"""
+  MMK
+
+  """"""
+  MNT
+
+  """"""
+  MOP
+
+  """"""
+  MRU
+
+  """"""
+  MUR
+
+  """"""
+  MVR
+
+  """"""
+  MWK
+
+  """"""
+  MXN
+
+  """"""
+  MXV
+
+  """"""
+  MYR
+
+  """"""
+  MZN
+
+  """"""
+  NAD
+
+  """"""
+  NGN
+
+  """"""
+  NIO
+
+  """"""
+  NOK
+
+  """"""
+  NPR
+
+  """"""
+  NZD
+
+  """"""
+  OMR
+
+  """"""
+  PAB
+
+  """"""
+  PEN
+
+  """"""
+  PGK
+
+  """"""
+  PHP
+
+  """"""
+  PKR
+
+  """"""
+  PLN
+
+  """"""
+  PYG
+
+  """"""
+  QAR
+
+  """"""
+  RON
+
+  """"""
+  RSD
+
+  """"""
+  RUB
+
+  """"""
+  RWF
+
+  """"""
+  SAR
+
+  """"""
+  SBD
+
+  """"""
+  SCR
+
+  """"""
+  SDG
+
+  """"""
+  SEK
+
+  """"""
+  SGD
+
+  """"""
+  SHP
+
+  """"""
+  SLE
+
+  """"""
+  SLL
+
+  """"""
+  SOS
+
+  """"""
+  SRD
+
+  """"""
+  SSP
+
+  """"""
+  STN
+
+  """"""
+  SVC
+
+  """"""
+  SYP
+
+  """"""
+  SZL
+
+  """"""
+  THB
+
+  """"""
+  TJS
+
+  """"""
+  TMT
+
+  """"""
+  TND
+
+  """"""
+  TOP
+
+  """"""
+  TRY
+
+  """"""
+  TTD
+
+  """"""
+  TWD
+
+  """"""
+  TZS
+
+  """"""
+  UAH
+
+  """"""
+  UGX
+
+  """"""
+  USD
+
+  """"""
+  USN
+
+  """"""
+  UYI
+
+  """"""
+  UYU
+
+  """"""
+  UYW
+
+  """"""
+  UZS
+
+  """"""
+  VED
+
+  """"""
+  VES
+
+  """"""
+  VND
+
+  """"""
+  VUV
+
+  """"""
+  WST
+
+  """"""
+  XAF
+
+  """"""
+  XCD
+
+  """"""
+  XDR
+
+  """"""
+  XOF
+
+  """"""
+  XPF
+
+  """"""
+  XSU
+
+  """"""
+  XUA
+
+  """"""
+  YER
+
+  """"""
+  ZAR
+
+  """"""
+  ZMW
+
+  """"""
+  ZWL
+}
+
+""""""
+scalar Date
+
+"""Date with time (isoformat)"""
+scalar DateTime
+
+"""A physical device that plays music."""
+type Device implements Node {
+  """"""
+  id: ID!
+
+  """The name of the device."""
+  name: String!
+
+  """What type of device this is, e.g mobile or desktop"""
+  type: String!
+
+  """A more descriptive text of the device."""
+  label: String!
+
+  """The vendor who has manufactured the device"""
+  vendorId: String!
+
+  """Which current version the device is running on."""
+  softwareVersion: String!
+
+  """The code to use when pairing the device to a sound zone."""
+  pairingCode: String!
+
+  """The device's current playback state, e.g paused or playing."""
+  playback: Playback
+
+  """The sound zone the device is paired with."""
+  soundZone: SoundZone
+
+  """The platform the device is running on."""
+  platform: String!
+
+  """Which current OS version the device is running on."""
+  osVersion: String!
+
+  """The hardware id of the device, e.g mac address."""
+  hardwareId: String!
+
+  """Information about which permissions current viewer has on the device."""
+  permissions: [DevicePermission!] @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """The device's capabilities."""
+  capabilities: [DeviceCapability!]!
+
+  """If the device is currently in a pairing state."""
+  isPairing: Boolean!
+
+  """The device's metrics."""
+  metrics: DeviceMetrics
+}
+
+""""""
+type DeviceActor {
+  """"""
+  device: ActivityLogDevice
+}
+
+enum DeviceCapability {
+  """"""
+  BLOCKED_TRACKS
+
+  """"""
+  CROSSFADE
+
+  """"""
+  DISKCACHE
+
+  """"""
+  DISKCACHE_MAX_MB
+
+  """"""
+  DISK_METRICS
+
+  """"""
+  DOWNLOAD_LIMITATION
+
+  """"""
+  HIGH_BITRATE
+
+  """"""
+  LUCY
+
+  """"""
+  LUCY_MANAGED
+
+  """"""
+  MAX_DOWNLOAD_SPEED
+
+  """"""
+  MEDIUM_BITRATE
+
+  """"""
+  ONLINE_MONITORING
+
+  """"""
+  PLAYBACK_CONTROL
+
+  """"""
+  PLAY_FROM_COLLECTION
+
+  """"""
+  PREFETCH_PLAY_FROM
+
+  """"""
+  STEREO_MONO
+
+  """"""
+  STREAMING_ONLY
+
+  """"""
+  VOLUME
+
+  """"""
+  VOLUME_EQ
+}
+
+""""""
+type DeviceMetrics {
+  """The amount of minutes cached on the device."""
+  cachedMinutes: Int!
+
+  """The amount of disk space used by the device."""
+  diskUsedMb: Int!
+
+  """The total amount of disk space on the device."""
+  diskTotalMb: Int!
+
+  """The maximum amount of disk space used to cache on the device."""
+  maxCacheMb: Int!
+
+  """Last time the metrics were updated."""
+  updatedAt: Date!
+}
+
+""""""
+input DevicePairInput {
+  """"""
+  pairingCode: String!
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+type DevicePairPayload {
+  """"""
+  token: String!
+
+  """"""
+  refreshToken: String!
+
+  """"""
+  expiresAt: Date!
+
+  """"""
+  clientMutationId: String
+}
+
+enum DevicePermission {
+  """"""
+  READ
+
+  """"""
+  WRITE
+}
+
+""""""
+type DeviceReference {
+  """"""
+  device: ActivityLogDevice
+}
+
+""""""
+input DeviceReportingInput {
+  """"""
+  platform: String!
+
+  """"""
+  version: String!
+
+  """"""
+  state: DeviceReportingState!
+}
+
+enum DeviceReportingState {
+  """"""
+  offline
+
+  """"""
+  online
+}
+
+""""""
+input DeviceUpdateInput {
+  """"""
+  device: ID!
+}
+
+""""""
+type DeviceUpdatePayload {
+  """"""
+  device: Device!
+}
+
+"""
+Used for presentation and styling of something, such as a hero section or teaser.
+"""
+type Display {
+  """The title to use when presenting."""
+  title: String!
+
+  """
+  A pair of complementary hex colors matching the image to use when presenting.
+  """
+  colors: Colors
+
+  """The image to use when presenting."""
+  image: Image
+
+  """
+  Complementary hex colors matching the image to use when presenting, based on the selected theme. Currently implemented for DarkTheme and LightTheme
+  """
+  palette(theme: Theme!): Palette
+}
+
+""""""
+interface Displayable {
+  """"""
+  display: Display
+}
+
+""""""
+type DisplayableConnection {
+  """"""
+  total: Int!
+
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [DisplayableEdge!]!
+}
+
+""""""
+type DisplayableEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: PlaylistArtistTrackAlbumBrowseCategory
+}
+
+""""""
+type EditorialCard implements Displayable {
+  """"""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """"""
+  description: String!
+
+  """"""
+  item: Displayable!
+
+  """"""
+  link: EditorialLink!
+
+  """"""
+  links: [EditorialLink]
+}
+
+""""""
+type EditorialLink implements Displayable {
+  """"""
+  display: Display
+
+  """"""
+  id: ID!
+}
+
+""""""
+interface EditorialPage {
+  """"""
+  id: ID!
+
+  """"""
+  sections(first: Int = null, last: Int = null, after: String = null, before: String = null): EditorialSectionConnection!
+}
+
+""""""
+interface EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+}
+
+""""""
+type EditorialSectionConnection {
+  """"""
+  total: Int!
+
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [EditorialSectionEdge]
+}
+
+""""""
+type EditorialSectionEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  density: Int!
+
+  """"""
+  node: EditorialSection!
+}
+
+""""""
+type Error {
+  """"""
+  id: ID!
+
+  """Indicates if the error is resolved or not."""
+  resolved: Boolean
+
+  """What type of error this is."""
+  type: String
+
+  """A summarized description of the error."""
+  description: String
+
+  """Why did this error happen?"""
+  cause: String
+
+  """The time when the error occured."""
+  occurredAt: Date
+
+  """The time when the error was resolved."""
+  resolvedAt: Date
+}
+
+enum ErrorState {
+  """"""
+  all
+
+  """"""
+  unresolved
+}
+
+""""""
+type ExternalSpotifyComposer {
+  """"""
+  connectionId: String!
+
+  """"""
+  spotifyPlaylistUri: String!
+
+  """"""
+  id: ID
+
+  """"""
+  refreshSettings: SpotifyPlaylistRefreshSettings
+
+  """The permissions associated with this composer."""
+  permissions: [ExternalSpotifyComposerPermission!]
+}
+
+""""""
+type ExternalSpotifyComposerData {
+  """"""
+  spotifyUri: String!
+}
+
+enum ExternalSpotifyComposerPermission {
+  """"""
+  WRITE
+}
+
+""""""
+input FeedbackInput {
+  """"""
+  feedbackId: String!
+
+  """"""
+  feedbackDatetime: String!
+
+  """"""
+  feedbackFormName: String!
+
+  """"""
+  payload: String!
+
+  """"""
+  metadata: String = null
+}
+
+"""A flag."""
+type Flag {
+  """"""
+  name: String!
+
+  """"""
+  properties: FlagValuesJSON
+}
+
+"""Input indicating a flag application event"""
+input FlagApplyEventInput {
+  """"""
+  flag: String!
+
+  """"""
+  applyTime: DateTime!
+}
+
+"""The JSON representation of a flags properties."""
+scalar FlagValuesJSON
+
+"""A flags response."""
+type FlagsResponse {
+  """"""
+  expiresAt: DateTime!
+
+  """"""
+  trackingKey: String
+
+  """"""
+  flags: [Flag!]!
+
+  """"""
+  resolveToken: String
+}
+
+""""""
+input GenerateOTPInput {
+  """The refresh token for the logged in entity."""
+  refreshToken: String!
+}
+
+""""""
+type GenerateOTPPayload {
+  """The OTP for the logged in entity (will expire)."""
+  otp: String!
+
+  """The timestamp for when the OTP will expire."""
+  expiresAt: Instant!
+}
+
+""""""
+input GenerateStreamingUrlInput {
+  """"""
+  soundZone: ID!
+}
+
+""""""
+type GenerateStreamingUrlPayload {
+  """"""
+  streamUrl: String!
+}
+
+"""A context to use when fetching flags."""
+input GetFlagsContextInput {
+  """
+  These properties are stored and used in future evaluations where these may not be passed
+  """
+  stored: [KeyValuePairInput!] = []
+
+  """
+  These properties are only used for evaluation of flags of the current request and aren't stored
+  """
+  ephemeral: [KeyValuePairInput!] = []
+}
+
+""""""
+scalar HexColor
+
+"""A track that a sound zone has played."""
+type HistoryTrack {
+  """"""
+  id: ID!
+
+  """
+  When playback was started. A date-time with time-zone in the ISO-8601 format.
+  """
+  startedAt: Date!
+
+  """
+  When playback was finished. A date-time with time-zone in the ISO-8601 format.
+  """
+  finishedAt: Date!
+
+  """The PlaybackSource the current track is from."""
+  playFrom: PlaybackSource
+
+  """The track that was played."""
+  track: Track
+}
+
+""""""
+type HistoryTrackConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [HistoryTrackEdge!]!
+}
+
+""""""
+type HistoryTrackEdge {
+  """The history track node for this edge"""
+  node: HistoryTrack!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+}
+
+""""""
+type HomeEditorialSection implements EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+
+  """"""
+  description: String
+}
+
+""""""
+type HomePage implements EditorialPage {
+  """"""
+  id: ID!
+
+  """"""
+  sections(first: Int = null, last: Int = null, after: String = null, before: String = null): EditorialSectionConnection!
+
+  """"""
+  tabs: [EditorialLink!]!
+
+  """"""
+  title: String!
+}
+
+"""Image used for presenting in UI."""
+type Image {
+  """
+  Url to a placeholder image to use while proper image is loading or when one does
+    not exist. Replace `%w` and `%h` with the desired width and height.
+  """
+  placeholder: Url
+
+  """Urls for resized images in three predefined sizes."""
+  sizes: ImageSizes
+
+  """Url for the image resized to specified width and height."""
+  size(height: Int!, width: Int!): Url
+}
+
+""""""
+type ImageSizes {
+  """"""
+  hero: Url
+
+  """"""
+  teaser: Url
+
+  """"""
+  thumbnail: Url
+}
+
+""""""
+type ImageUrl {
+  """"""
+  url: String!
+}
+
+"""
+An instantaneous point on the time-line represented by a standard date time string
+"""
+scalar Instant
+
+""""""
+type InternalActor {
+  """"""
+  id: String!
+
+  """"""
+  name: String!
+}
+
+""""""
+type InvitationInvalid {
+  """"""
+  reason: InvitationInvalidReason!
+}
+
+enum InvitationInvalidReason {
+  """"""
+  ALREADY_ACCEPTED
+
+  """"""
+  EXPIRED
+}
+
+""""""
+type InvitationValid {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+input InvitationValidateInput {
+  """The secret of the invitation"""
+  secret: String!
+}
+
+""""""
+union InvitationValidatePayload = InvitationInvalid | InvitationValid
+
+""""""
+union InvitedBy = PublicAPIClient | User
+
+enum IsoCountry {
+  """Andorra"""
+  AD
+
+  """United Arab Emirates"""
+  AE
+
+  """Afghanistan"""
+  AF
+
+  """Antigua and Barbuda"""
+  AG
+
+  """Anguilla"""
+  AI
+
+  """Albania"""
+  AL
+
+  """Armenia"""
+  AM
+
+  """Angola"""
+  AO
+
+  """Antarctica"""
+  AQ
+
+  """Argentina"""
+  AR
+
+  """American Samoa"""
+  AS
+
+  """Austria"""
+  AT
+
+  """Australia"""
+  AU
+
+  """Aruba"""
+  AW
+
+  """?land Islands"""
+  AX
+
+  """Azerbaijan"""
+  AZ
+
+  """Bosnia and Herzegovina"""
+  BA
+
+  """Barbados"""
+  BB
+
+  """Bangladesh"""
+  BD
+
+  """Belgium"""
+  BE
+
+  """Burkina Faso"""
+  BF
+
+  """Bulgaria"""
+  BG
+
+  """Bahrain"""
+  BH
+
+  """Burundi"""
+  BI
+
+  """Benin"""
+  BJ
+
+  """Saint Barth?lemy"""
+  BL
+
+  """Bermuda"""
+  BM
+
+  """Brunei Darussalam"""
+  BN
+
+  """Bolivia (Plurinational State of)"""
+  BO
+
+  """Bonaire, Sint Eustatius and Saba"""
+  BQ
+
+  """Brazil"""
+  BR
+
+  """Bahamas"""
+  BS
+
+  """Bhutan"""
+  BT
+
+  """Bouvet Island"""
+  BV
+
+  """Botswana"""
+  BW
+
+  """Belarus"""
+  BY
+
+  """Belize"""
+  BZ
+
+  """Canada"""
+  CA
+
+  """Cocos (Keeling) Islands"""
+  CC
+
+  """Congo, Democratic Republic of the"""
+  CD
+
+  """Central African Republic"""
+  CF
+
+  """Congo"""
+  CG
+
+  """Switzerland"""
+  CH
+
+  """C?te d'Ivoire"""
+  CI
+
+  """Cook Islands"""
+  CK
+
+  """Chile"""
+  CL
+
+  """Cameroon"""
+  CM
+
+  """China"""
+  CN
+
+  """Colombia"""
+  CO
+
+  """Costa Rica"""
+  CR
+
+  """Cuba"""
+  CU
+
+  """Cabo Verde"""
+  CV
+
+  """Cura?ao"""
+  CW
+
+  """Christmas Island"""
+  CX
+
+  """Cyprus"""
+  CY
+
+  """Czechia"""
+  CZ
+
+  """Germany"""
+  DE
+
+  """Djibouti"""
+  DJ
+
+  """Denmark"""
+  DK
+
+  """Dominica"""
+  DM
+
+  """Dominican Republic"""
+  DO
+
+  """Algeria"""
+  DZ
+
+  """Ecuador"""
+  EC
+
+  """Estonia"""
+  EE
+
+  """Egypt"""
+  EG
+
+  """Western Sahara"""
+  EH
+
+  """Eritrea"""
+  ER
+
+  """Spain"""
+  ES
+
+  """Ethiopia"""
+  ET
+
+  """Finland"""
+  FI
+
+  """Fiji"""
+  FJ
+
+  """Falkland Islands (Malvinas)"""
+  FK
+
+  """Micronesia (Federated States of)"""
+  FM
+
+  """Faroe Islands"""
+  FO
+
+  """France"""
+  FR
+
+  """Gabon"""
+  GA
+
+  """United Kingdom of Great Britain and Northern Ireland"""
+  GB
+
+  """Grenada"""
+  GD
+
+  """Georgia"""
+  GE
+
+  """French Guiana"""
+  GF
+
+  """Guernsey"""
+  GG
+
+  """Ghana"""
+  GH
+
+  """Gibraltar"""
+  GI
+
+  """Greenland"""
+  GL
+
+  """Gambia"""
+  GM
+
+  """Guinea"""
+  GN
+
+  """Guadeloupe"""
+  GP
+
+  """Equatorial Guinea"""
+  GQ
+
+  """Greece"""
+  GR
+
+  """South Georgia and the South Sandwich Islands"""
+  GS
+
+  """Guatemala"""
+  GT
+
+  """Guam"""
+  GU
+
+  """Guinea-Bissau"""
+  GW
+
+  """Guyana"""
+  GY
+
+  """Hong Kong"""
+  HK
+
+  """Heard Island and McDonald Islands"""
+  HM
+
+  """Honduras"""
+  HN
+
+  """Croatia"""
+  HR
+
+  """Haiti"""
+  HT
+
+  """Hungary"""
+  HU
+
+  """Indonesia"""
+  ID
+
+  """Ireland"""
+  IE
+
+  """Israel"""
+  IL
+
+  """Isle of Man"""
+  IM
+
+  """India"""
+  IN
+
+  """British Indian Ocean Territory"""
+  IO
+
+  """Iraq"""
+  IQ
+
+  """Iran (Islamic Republic of)"""
+  IR
+
+  """Iceland"""
+  IS
+
+  """Italy"""
+  IT
+
+  """Jersey"""
+  JE
+
+  """Jamaica"""
+  JM
+
+  """Jordan"""
+  JO
+
+  """Japan"""
+  JP
+
+  """Kenya"""
+  KE
+
+  """Kyrgyzstan"""
+  KG
+
+  """Cambodia"""
+  KH
+
+  """Kiribati"""
+  KI
+
+  """Comoros"""
+  KM
+
+  """Saint Kitts and Nevis"""
+  KN
+
+  """Korea (Democratic People's Republic of)"""
+  KP
+
+  """Korea, Republic of"""
+  KR
+
+  """Kuwait"""
+  KW
+
+  """Cayman Islands"""
+  KY
+
+  """Kazakhstan"""
+  KZ
+
+  """Lao People's Democratic Republic"""
+  LA
+
+  """Lebanon"""
+  LB
+
+  """Saint Lucia"""
+  LC
+
+  """Liechtenstein"""
+  LI
+
+  """Sri Lanka"""
+  LK
+
+  """Liberia"""
+  LR
+
+  """Lesotho"""
+  LS
+
+  """Lithuania"""
+  LT
+
+  """Luxembourg"""
+  LU
+
+  """Latvia"""
+  LV
+
+  """Libya"""
+  LY
+
+  """Morocco"""
+  MA
+
+  """Monaco"""
+  MC
+
+  """Moldova, Republic of"""
+  MD
+
+  """Montenegro"""
+  ME
+
+  """Saint Martin (French part)"""
+  MF
+
+  """Madagascar"""
+  MG
+
+  """Marshall Islands"""
+  MH
+
+  """North Macedonia"""
+  MK
+
+  """Mali"""
+  ML
+
+  """Myanmar"""
+  MM
+
+  """Mongolia"""
+  MN
+
+  """Macao"""
+  MO
+
+  """Northern Mariana Islands"""
+  MP
+
+  """Martinique"""
+  MQ
+
+  """Mauritania"""
+  MR
+
+  """Montserrat"""
+  MS
+
+  """Malta"""
+  MT
+
+  """Mauritius"""
+  MU
+
+  """Maldives"""
+  MV
+
+  """Malawi"""
+  MW
+
+  """Mexico"""
+  MX
+
+  """Malaysia"""
+  MY
+
+  """Mozambique"""
+  MZ
+
+  """Namibia"""
+  NA
+
+  """New Caledonia"""
+  NC
+
+  """Niger"""
+  NE
+
+  """Norfolk Island"""
+  NF
+
+  """Nigeria"""
+  NG
+
+  """Nicaragua"""
+  NI
+
+  """Netherlands"""
+  NL
+
+  """Norway"""
+  NO
+
+  """Nepal"""
+  NP
+
+  """Nauru"""
+  NR
+
+  """Niue"""
+  NU
+
+  """New Zealand"""
+  NZ
+
+  """Oman"""
+  OM
+
+  """Panama"""
+  PA
+
+  """Peru"""
+  PE
+
+  """French Polynesia"""
+  PF
+
+  """Papua New Guinea"""
+  PG
+
+  """Philippines"""
+  PH
+
+  """Pakistan"""
+  PK
+
+  """Poland"""
+  PL
+
+  """Saint Pierre and Miquelon"""
+  PM
+
+  """Pitcairn"""
+  PN
+
+  """Puerto Rico"""
+  PR
+
+  """Palestine, State of"""
+  PS
+
+  """Portugal"""
+  PT
+
+  """Palau"""
+  PW
+
+  """Paraguay"""
+  PY
+
+  """Qatar"""
+  QA
+
+  """R?union"""
+  RE
+
+  """Romania"""
+  RO
+
+  """Serbia"""
+  RS
+
+  """Russian Federation"""
+  RU
+
+  """Rwanda"""
+  RW
+
+  """Saudi Arabia"""
+  SA
+
+  """Solomon Islands"""
+  SB
+
+  """Seychelles"""
+  SC
+
+  """Sudan"""
+  SD
+
+  """Sweden"""
+  SE
+
+  """Singapore"""
+  SG
+
+  """Saint Helena, Ascension and Tristan da Cunha"""
+  SH
+
+  """Slovenia"""
+  SI
+
+  """Svalbard and Jan Mayen"""
+  SJ
+
+  """Slovakia"""
+  SK
+
+  """Sierra Leone"""
+  SL
+
+  """San Marino"""
+  SM
+
+  """Senegal"""
+  SN
+
+  """Somalia"""
+  SO
+
+  """Suriname"""
+  SR
+
+  """South Sudan"""
+  SS
+
+  """Sao Tome and Principe"""
+  ST
+
+  """El Salvador"""
+  SV
+
+  """Sint Maarten (Dutch part)"""
+  SX
+
+  """Syrian Arab Republic"""
+  SY
+
+  """Eswatini"""
+  SZ
+
+  """Turks and Caicos Islands"""
+  TC
+
+  """Chad"""
+  TD
+
+  """French Southern Territories"""
+  TF
+
+  """Togo"""
+  TG
+
+  """Thailand"""
+  TH
+
+  """Tajikistan"""
+  TJ
+
+  """Tokelau"""
+  TK
+
+  """Timor-Leste"""
+  TL
+
+  """Turkmenistan"""
+  TM
+
+  """Tunisia"""
+  TN
+
+  """Tonga"""
+  TO
+
+  """Turkey"""
+  TR
+
+  """Trinidad and Tobago"""
+  TT
+
+  """Tuvalu"""
+  TV
+
+  """Taiwan, Province of China"""
+  TW
+
+  """Tanzania, United Republic of"""
+  TZ
+
+  """Ukraine"""
+  UA
+
+  """Uganda"""
+  UG
+
+  """United States Minor Outlying Islands"""
+  UM
+
+  """United States of America"""
+  US
+
+  """Uruguay"""
+  UY
+
+  """Uzbekistan"""
+  UZ
+
+  """Holy See"""
+  VA
+
+  """Saint Vincent and the Grenadines"""
+  VC
+
+  """Venezuela (Bolivarian Republic of)"""
+  VE
+
+  """Virgin Islands (British)"""
+  VG
+
+  """Virgin Islands (U.S.)"""
+  VI
+
+  """Viet Nam"""
+  VN
+
+  """Vanuatu"""
+  VU
+
+  """Wallis and Futuna"""
+  WF
+
+  """Samoa"""
+  WS
+
+  """Yemen"""
+  YE
+
+  """Mayotte"""
+  YT
+
+  """South Africa"""
+  ZA
+
+  """Zambia"""
+  ZM
+
+  """Zimbabwe"""
+  ZW
+}
+
+""""""
+input IsoCountryFilter {
+  """"""
+  eq: IsoCountry
+
+  """"""
+  notEq: IsoCountry
+}
+
+enum ItemType {
+  """"""
+  NON_STREAMING
+
+  """"""
+  STREAMING
+}
+
+"""
+A generic JSON value that can be a string, number, boolean, object, or array.
+"""
+scalar JSON
+
+"""A key and value input."""
+input KeyValuePairInput {
+  """"""
+  key: String!
+
+  """"""
+  value: String!
+
+  """"""
+  expiresAt: DateTime = null
+}
+
+""""""
+union LegalAcceptanceStatus = Accepted | NotAccepted | NotApplicable
+
+"""Library containing user saved content."""
+type Library {
+  """Owner ID of the library."""
+  owner: ID!
+
+  """
+  The library's version is updated on every change. Include in mutation to prevent overwriting unseen changes.
+  """
+  version: String!
+
+  """When the library was last updated."""
+  updatedAt: Date!
+
+  """Tags used in this library"""
+  tags(first: Int = null, last: Int = null, after: String = null, before: String = null): LibraryTagConnection @deprecated(reason: "EXPERIMENTAL")
+
+  """An unordered list of all IDs of all kinds in the library"""
+  ids: [ID!]
+
+  """Items in the library"""
+  items(
+    """Specifies the maximum number of items to return for a page."""
+    first: Int = null
+
+    """Not supported."""
+    last: Int = null
+
+    """
+    A pagination cursor. The query will return items that appear after the item identified by this cursor.
+    """
+    after: String = null
+
+    """Not supported."""
+    before: String = null
+
+    """Custom query filter for filtering items in library"""
+    query: LibraryItemsQueryFilter = null
+  ): LibraryItemConnection
+}
+
+""""""
+type LibraryItemConnection {
+  """
+  Total number of items in the library for the current query and filters.
+  """
+  total: Int!
+
+  """Pagination details for this connection."""
+  pageInfo: PageInfo!
+
+  """A list of edges for this connection."""
+  edges: [LibraryItemEdge!]!
+}
+
+""""""
+type LibraryItemEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The ID of the library item."""
+  id: ID!
+
+  """The datetime the item was added to the library."""
+  addedAt: Date!
+
+  """The ID of who added the item to the library."""
+  addedBy: String!
+
+  """The library item node, either a Playlist or Schedule."""
+  node: LibraryItemNode
+}
+
+""""""
+input LibraryItemInput {
+  """ID of the item to add to the library."""
+  id: String!
+
+  """Kind of the item to add to the library."""
+  itemKind: LibraryItemKind!
+}
+
+enum LibraryItemKind {
+  """"""
+  PLAYLIST
+
+  """"""
+  SCHEDULE
+}
+
+"""A library item which can be either a Playlist or a Schedule."""
+union LibraryItemNode = Playlist | Schedule
+
+""""""
+type LibraryItemTag {
+  """"""
+  tag: String!
+}
+
+""""""
+input LibraryItemTagInput {
+  """"""
+  itemId: String!
+
+  """"""
+  tags: [String!]!
+}
+
+""""""
+input LibraryItemTagsFilter {
+  """"""
+  tags: [String!]!
+
+  """"""
+  strategy: LibraryItemTagsFilterStrategy!
+}
+
+enum LibraryItemTagsFilterStrategy {
+  """"""
+  INCLUDE_ALL
+
+  """"""
+  INCLUDE_ANY_OF
+
+  """"""
+  EXCLUDE_IF_ANY_OF
+
+  """"""
+  EXCLUDE_IF_ALL
+}
+
+"""Query filter for library items."""
+input LibraryItemsQueryFilter {
+  """Search term for searching items in the library."""
+  search: String = null
+
+  """Sorting filter for library items."""
+  sort: LibraryItemsSortFilter = null
+
+  """Item kinds to filter the library items by."""
+  kinds: [LibraryItemKind!] = null
+
+  """"""
+  tags: LibraryItemTagsFilter = null
+}
+
+"""Sorting filter for library items."""
+input LibraryItemsSortFilter {
+  """Field to sort by."""
+  field: LibraryItemsSortFilterField!
+
+  """Sort order."""
+  order: LibraryItemsSortFilterOrder!
+}
+
+enum LibraryItemsSortFilterField {
+  """"""
+  ADDED_AT
+
+  """"""
+  NAME
+}
+
+enum LibraryItemsSortFilterOrder {
+  """"""
+  ASC
+
+  """"""
+  DESC
+}
+
+""""""
+type LibraryTag {
+  """"""
+  tag: String!
+}
+
+""""""
+type LibraryTagConnection {
+  """"""
+  total: Int!
+
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [LibraryTagEdge!]
+}
+
+""""""
+type LibraryTagEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: LibraryTag
+}
+
+""""""
+type LibraryUpdatePayload {
+  """"""
+  library: Library!
+}
+
+""""""
+input LibraryUpdateSubscriptionInput {
+  """"""
+  owner: ID!
+}
+
+type LibraryUpdateSubscriptionPayload {
+  library: Library!
+}
+
+""""""
+type LineItem {
+  """"""
+  id: ID!
+
+  """"""
+  cartId: String!
+
+  """"""
+  product: BillingProduct
+
+  """"""
+  recurring: Boolean!
+
+  """"""
+  quantity: Int!
+
+  """"""
+  billingGroup: ID!
+
+  """"""
+  periods: [Period!]!
+
+  """"""
+  isoCurrency: String!
+
+  """"""
+  recurringCost: RecurringCost
+
+  """"""
+  type: String!
+
+  """"""
+  priceToken: String!
+
+  """"""
+  activatedDiscount: ActivatedDiscount
+
+  """"""
+  soundZone: ID!
+
+  """"""
+  billingCycle: BillingCycle
+
+  """"""
+  plan: Plan
+
+  """"""
+  streamingType: StreamingType
+
+  """"""
+  trialLength: Int!
+
+  """If set, this line item has a fixed currency"""
+  currencyOverride: String
+
+  """If set, this line item has a fixed price"""
+  priceOverride: Float
+
+  """"""
+  fromStreamingType: StreamingType
+
+  """"""
+  streamingTypeChangeKind: StreamingTypeChangeKind
+}
+
+""""""
+input LinkAccountToExternalIdInput {
+  """"""
+  accountId: ID!
+
+  """"""
+  externalId: String!
+
+  """"""
+  externalSystemName: String!
+}
+
+"""A physical location, like a store. Can have one or many sound zones"""
+type Location implements Node {
+  """"""
+  id: ID!
+
+  """The name of the location."""
+  name: String!
+
+  """"""
+  address: String! @deprecated(reason: "Use physicalAddress instead")
+
+  """"""
+  address2: String! @deprecated(reason: "Use physicalAddress instead")
+
+  """"""
+  postalCode: String! @deprecated(reason: "Use physicalAddress instead")
+
+  """"""
+  city: String! @deprecated(reason: "Use physicalAddress instead")
+
+  """"""
+  state: String! @deprecated(reason: "Use physicalAddress instead")
+
+  """"""
+  isoCountry: String! @deprecated(reason: "use country instead")
+
+  """"""
+  country: String! @deprecated(reason: "Use physicalAddress instead")
+
+  """Prettified name for the country of the location."""
+  countryName: String!
+
+  """The address information for the location."""
+  physicalAddress: Address!
+
+  """Which timezone the location is in."""
+  timezone: String!
+
+  """The account the location is connected to."""
+  account: Account
+
+  """The sound zones connected to this location."""
+  soundZones(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: LocationSoundZoneOrderInput! = {field: NAME, direction: ASC}
+  ): LocationSoundZoneConnection
+
+  """
+  Information about which permissions current viewer has on the location.
+  """
+  permissions: [LocationPermission!] @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Users that have access to the location."""
+  users(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: LocationUserOrderInput! = {field: NAME, direction: ASC}
+  ): LocationUserConnection @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Invited users to the location"""
+  invited(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: LocationInvitedUserOrderInput! = {field: EMAIL, direction: ASC}
+  ): LocationInvitedUserConnection @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+}
+
+""""""
+input LocationCreateInput {
+  """"""
+  account: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  address: String
+
+  """"""
+  address2: String
+
+  """"""
+  postalCode: String
+
+  """"""
+  city: String
+
+  """"""
+  country: String
+
+  """"""
+  state: String
+
+  """"""
+  physicalAddress: AddressCreateInput
+
+  """"""
+  soundZoneName: String
+
+  """"""
+  billingGroupId: ID
+}
+
+""""""
+type LocationCreatePayload {
+  """"""
+  location: Location!
+
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+type LocationCreated {
+  """"""
+  id: ID!
+
+  """"""
+  account: ID!
+
+  """"""
+  location: Location!
+}
+
+""""""
+type LocationDeleted {
+  """"""
+  id: ID!
+
+  """"""
+  account: ID!
+}
+
+""""""
+input LocationEventForParentInput {
+  """"""
+  account: ID!
+}
+
+""""""
+type LocationEventForParentPayload {
+  """"""
+  event: LocationParentEvent!
+}
+
+enum LocationField {
+  """"""
+  NAME
+}
+
+""""""
+input LocationInviteUserInput {
+  """The email of the user to invite."""
+  email: String!
+
+  """The location the user should be invited to."""
+  locationId: ID!
+
+  """The roles the user should be invited to."""
+  roles: [String!]!
+}
+
+""""""
+type LocationInvitedUserConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [LocationInvitedUserEdge!]!
+
+  """Total number of User for this connection"""
+  total: Int!
+}
+
+""""""
+type LocationInvitedUserEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The Invitations node for this edge"""
+  node: PendingUser!
+}
+
+enum LocationInvitedUserField {
+  """"""
+  EMAIL
+
+  """"""
+  LAST_UPDATED
+}
+
+""""""
+input LocationInvitedUserOrderInput {
+  """"""
+  field: LocationInvitedUserField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+union LocationParentEvent = LocationCreated | LocationDeleted
+
+enum LocationPermission {
+  """"""
+  ADD_ADMIN_MEMBER
+
+  """"""
+  ADD_ANY_MEMBERS
+
+  """"""
+  ADD_EDITOR_MEMBER
+
+  """"""
+  ADD_STAFF_MEMBER
+
+  """"""
+  BILLING_DETAILS_READ
+
+  """"""
+  BILLING_DETAILS_WRITE
+
+  """"""
+  PAIR
+
+  """"""
+  READ
+
+  """"""
+  SOUND_ZONES_READ
+
+  """"""
+  SOUND_ZONES_WRITE
+
+  """"""
+  SOUND_ZONE_CREATE
+
+  """"""
+  SOUND_ZONE_ENTERPRISE_REMOTE_SETTING_READ
+
+  """"""
+  SOUND_ZONE_ENTERPRISE_REMOTE_SETTING_WRITE
+
+  """"""
+  UNPAIR
+
+  """"""
+  USERS_READ
+
+  """"""
+  USERS_WRITE
+
+  """"""
+  WRITE
+}
+
+""""""
+type LocationPublic {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  physicalAddress: Address!
+
+  """"""
+  coordinates: Coordinates!
+}
+
+""""""
+input LocationRemoveInvitationInput {
+  """The id of the invitation."""
+  id: ID!
+}
+
+""""""
+type LocationRemoveInvitationPayload {
+  """The status of the request"""
+  status: String
+}
+
+""""""
+input LocationRemoveUserInput {
+  """The id of the user to remove"""
+  userId: ID!
+
+  """The id of the location"""
+  locationId: ID!
+}
+
+""""""
+type LocationRemoveUserPayload {
+  """The status of the request"""
+  status: String
+}
+
+""""""
+input LocationResendInvitationInput {
+  """The id of the invitation"""
+  id: ID!
+}
+
+""""""
+type LocationSoundZoneConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [LocationSoundZoneEdge!]!
+
+  """"""
+  totalCount: Int! @deprecated(reason: "Use `total` instead")
+
+  """Total number of SoundZone for this connection"""
+  total: Int!
+}
+
+""""""
+type LocationSoundZoneEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The SoundZone node for this edge"""
+  node: SoundZone
+}
+
+""""""
+input LocationSoundZoneOrderInput {
+  """"""
+  field: SoundZoneField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+input LocationUpdateInput {
+  """"""
+  id: ID!
+
+  """"""
+  name: String
+
+  """"""
+  address: String
+
+  """"""
+  address2: String
+
+  """"""
+  postalCode: String
+
+  """"""
+  state: String
+
+  """"""
+  city: String
+
+  """"""
+  physicalAddress: AddressUpdateInput
+}
+
+""""""
+type LocationUpdatePayload {
+  """"""
+  location: Location!
+}
+
+""""""
+input LocationUpdateSubscriptionInput {
+  """"""
+  location: ID!
+}
+
+""""""
+type LocationUpdateSubscriptionPayload {
+  """"""
+  location: Location!
+}
+
+""""""
+type LocationUserConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [LocationUserEdge!]!
+
+  """Total number of User for this connection"""
+  total: Int!
+}
+
+""""""
+type LocationUserEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The Roles node for this edge"""
+  roles: [String!]!
+
+  """The User node for this edge"""
+  node: User!
+}
+
+enum LocationUserField {
+  """"""
+  CREATED_AT
+
+  """"""
+  EMAIL
+
+  """"""
+  NAME
+}
+
+""""""
+input LocationUserOrderInput {
+  """"""
+  field: LocationUserField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+input LoginDeviceInput {
+  """"""
+  hardwareId: String!
+
+  """"""
+  vendorSecret: String!
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+type LoginDevicePayload {
+  """"""
+  token: String!
+
+  """"""
+  refreshToken: String!
+
+  """"""
+  expiresAt: Instant!
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+input LoginOTPInput {
+  """OTP for the user that should login."""
+  otp: String!
+}
+
+""""""
+type LoginOTPPayload {
+  """The access token for the logged in user (will expire)."""
+  token: String!
+
+  """
+  The refresh token for the logged in user, used in the refreshLogin mutation.
+  """
+  refreshToken: String!
+
+  """The timestamp for when the access token will expire."""
+  expiresAt: Instant!
+
+  """The users id connected to the token."""
+  userId: String!
+
+  """"""
+  intercomHash: String! @deprecated(reason: "This will soon be removed, use the top-level query intercomHash instead.")
+}
+
+""""""
+input LoginUserInput {
+  """Email for the user that should login."""
+  email: String!
+
+  """Password for the user that should login."""
+  password: String!
+
+  """"""
+  uriBased: Boolean
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+type LoginUserPayload {
+  """The access token for the logged in user (will expire)."""
+  token: String!
+
+  """
+  The refresh token for the logged in user, used in the refreshLogin mutation.
+  """
+  refreshToken: String!
+
+  """The timestamp for when the access token will expire."""
+  expiresAt: Instant!
+
+  """"""
+  clientMutationId: String
+
+  """The users id connected to the token."""
+  userId: String!
+
+  """"""
+  intercomHash: String! @deprecated(reason: "This will soon be removed, use the top-level query intercomHash instead.")
+}
+
+""""""
+type Loudness {
+  """"""
+  integrated: Float!
+
+  """"""
+  truePeak: Float!
+
+  """"""
+  range: Float!
+}
+
+"""The composer used for playlists created and curated manually."""
+type Manual {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type ManualScheduleComposer {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type ManuallyQueued {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type MarvinCity {
+  """"""
+  data: String!
+
+  """"""
+  lng: Float!
+
+  """"""
+  lat: Float!
+}
+
+""""""
+input MusicAnnotationInput {
+  """Annotation key."""
+  key: String!
+
+  """Annotation value."""
+  value: String!
+}
+
+"""A music library containing playlists and schedules."""
+type MusicLibrary {
+  """"""
+  id: ID!
+
+  """Revision/version of the library. Useful to compare with local state."""
+  revision: String!
+
+  """IDs of the library. Contains both playlists and schedules."""
+  ids: [ID!]!
+
+  """Playlists in the library."""
+  playlists(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: MusicLibraryPlaylistOrderInput! = {direction: ASC}
+  ): MusicLibraryPlaylistsConnection
+
+  """Schedules in the library."""
+  schedules(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: MusicLibraryScheduleOrderInput! = {direction: ASC}
+  ): MusicLibrarySchedulesConnection
+
+  """"""
+  soundtracks(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+  ): MusicLibrarySoundtracksConnection @deprecated(reason: "Replaced by `playlists`. It contains both stations and playlists.")
+}
+
+""""""
+input MusicLibraryPlaylistOrderInput {
+  """"""
+  field: PlaylistField
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type MusicLibraryPlaylistsConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [MusicLibraryPlaylistsEdge!]!
+}
+
+""""""
+type MusicLibraryPlaylistsEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The playlist node for this edge"""
+  node: Playlist
+}
+
+""""""
+input MusicLibraryScheduleOrderInput {
+  """"""
+  field: ScheduleField
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type MusicLibrarySchedulesConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [MusicLibrarySchedulesEdge!]!
+}
+
+""""""
+type MusicLibrarySchedulesEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The schedule node for this edge"""
+  node: Schedule
+}
+
+""""""
+type MusicLibrarySoundtracksConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [MusicLibrarySoundtracksEdge!]!
+}
+
+""""""
+type MusicLibrarySoundtracksEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: Soundtrack!
+}
+
+input MusicLibraryUpdateInput {
+  id: ID!
+}
+
+type MusicLibraryUpdatePayload {
+  musicLibrary: MusicLibrary!
+}
+
+"""
+A tag that describes some musical aspect of a track. Examples: `jazz`, `house`
+(for tag group `genre`), `60s`, `00s`, `latest` (for tag group `decade`),
+`low`, `medium`, `high` (for `energy`) etc.
+"""
+type MusicTag {
+  """"""
+  slug: String!
+
+  """"""
+  title: String!
+}
+
+""""""
+type MusicTagFilter {
+  """"""
+  tag: MusicTag!
+
+  """"""
+  isAvailable: Boolean!
+}
+
+""""""
+type MusicTagFilterGroup {
+  """"""
+  id: ID
+
+  """"""
+  title: String!
+
+  """"""
+  icon: String!
+
+  """"""
+  emptyLabel: String!
+
+  """"""
+  tags: [[MusicTagFilter!]]
+}
+
+"""A group of tags of some sort i.e. decade, genre, energy."""
+type MusicTagGroup {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  icon: String!
+
+  """"""
+  emptyLabel: String!
+
+  """"""
+  tags: [[MusicTag!]!]!
+}
+
+""""""
+input MusicTagInputFilter {
+  """"""
+  id: ID
+
+  """"""
+  slugs: [String!]
+}
+
+""""""
+type MusicTagSearchConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [MusicTagSearchEdge!]!
+
+  """"""
+  total: Int!
+
+  """"""
+  tagGroups: [MusicTagFilterGroup!]
+}
+
+""""""
+type MusicTagSearchEdge {
+  """"""
+  node: Track
+
+  """"""
+  cursor: String
+}
+
+""""""
+type Mutation {
+  """"""
+  playbackReporting(input: PlaybackReportingInput!): Boolean
+
+  """Set the user's role in the company they work at."""
+  userSetCompanyRole(input: UserSetCompanyRoleInput!): UserSetCompanyRoleResponse
+
+  """Submit the signup questionnaire for a specific account."""
+  accountSignupQuestionnaireSubmit(input: QuestionnaireInput!): QuestionnaireResponse
+
+  """
+  Set status of an onboarding-step to keep track of the onboarding progress.
+  """
+  setOnboardingStep(input: OnboardingStepInput!): OnboardingStepResponse @deprecated(reason: "EXPERIMENTAL: This feature is under development and can change at any time.")
+
+  """"""
+  like(id: String!): Boolean! @deprecated(reason: "test")
+
+  """"""
+  unlike(id: String!): Boolean! @deprecated(reason: "test")
+
+  """"""
+  createHomeTasteProfileFromOnboarding(artists: [String!]!): String! @deprecated(reason: "experiment_closed")
+
+  """Create a station using a prompt"""
+  createStationFromPrompt(input: CreateStationFromPromptInput!): CreateStationFromPromptResult @deprecated(reason: "EXPERIMENTAL")
+
+  """Update a station using a prompt"""
+  updateStationFromPrompt(input: UpdateStationFromPromptInput!): UpdateStationFromPromptResult @deprecated(reason: "EXPERIMENTAL")
+
+  """Write events to BigQuery"""
+  writeSectionsSeen(eventData: String!): String!
+
+  """Write feedback form data to BigQuery"""
+  writeFeedback(feedbackInput: FeedbackInput!): String!
+
+  """"""
+  createStationFromTags(input: CreateStationFromTagsInput!): CreateStationFromTagsPayload
+
+  """"""
+  updateStationFromTags(input: UpdateStationFromTagsInput!): UpdateStationFromTagsPayload
+
+  """Write live taste profile and playlists to library"""
+  writeTasteProfile(playlistsIds: [String!]!, source: String!, trackingId: String, context: String, captchaStr: String = null): String!
+
+  """Copy taste profile between accounts"""
+  copyTasteProfileFrom(source: String!, accountId: String!, captchaStr: String = null): String! @deprecated(reason: "EXPERIMENTAL")
+
+  """Report a flag apply event"""
+  applyFlags(events: [FlagApplyEventInput!]!, resolveToken: String!, currentClientTime: DateTime!): Boolean @deprecated(reason: "TEST")
+
+  """Sending Smart Shuffle feedback to BigQuery"""
+  giveSmartShuffleFeedback(input: SmartShuffleFeedback!): String!
+
+  """"""
+  createAnnouncement(options: AnnouncementInput!): Announcement!
+
+  """"""
+  updateAnnouncement(id: ID!, options: AnnouncementUpdateInput!): Announcement!
+
+  """"""
+  createAnnouncementCampaign(options: AnnouncementCampaignCreateInput!): AnnouncementCampaign!
+
+  """"""
+  updateAnnouncementCampaign(options: AnnouncementCampaignUpdateInput!): AnnouncementCampaign!
+
+  """"""
+  addGroupToAnnouncementCampaign(campaignId: ID!, group: AnnouncementGroupCreateInput!): AnnouncementCampaign!
+
+  """"""
+  removeGroupFromAnnouncementCampaign(campaignId: ID!, groupId: ID!): AnnouncementCampaign!
+
+  """"""
+  updateAnnouncementCampaignAssignment(options: AnnouncementCampaignAssignmentInput!): AnnouncementCampaignAssignments!
+
+  """"""
+  assignAnnouncementCampaignToSoundZones(options: AnnouncementCampaignAssignmentInput!): AnnouncementCampaignAssignments!
+
+  """"""
+  unassignAnnouncementCampaignFromSoundZones(options: AnnouncementCampaignAssignmentInput!): AnnouncementCampaignAssignments!
+
+  """"""
+  createAnnouncementPreview(options: AnnouncementInput!): String! @deprecated(reason: "will be removed, use the isPreview flag in createAnnouncement instead")
+
+  """"""
+  createAnnouncementAudioFileUploadUrl(originUrl: String = null): AnnouncementUploadRequest!
+
+  """"""
+  createAffiliatePartner(
+    """Name of the affiliate partner"""
+    firstName: String!
+
+    """Last name of the affiliate partner"""
+    lastName: String!
+
+    """Email of the affiliate partner"""
+    email: String!
+
+    """Affiliate name"""
+    affiliateName: String!
+
+    """Website URL"""
+    websiteUrl: String!
+
+    """Referrer encoded value"""
+    referrerEncodedValue: String
+
+    """Business size"""
+    businessSize: String!
+
+    """Company type"""
+    companyType: String!
+
+    """Operational reach"""
+    operationalReach: String!
+
+    """Tax/VAT ID"""
+    taxId: String
+
+    """Account ID"""
+    accountId: ID!
+
+    """Account created at timestamp"""
+    accountCreatedAt: String!
+
+    """Account updated at timestamp"""
+    accountUpdatedAt: String!
+
+    """Physical address of the affiliate partner"""
+    physicalAddress: AddressCreateInput!
+  ): CreateAffiliatePartnerResponse
+
+  """Create a Spotify Connection"""
+  createSpotifyConnection(code: String!, redirectUri: String!): SpotifyConnection!
+
+  """
+  Import playlists from Spotify, optionally adding them to the account music library.
+  """
+  importSpotifyPlaylists(connectionId: String!, spotifyPlaylistUris: [String!]!, addToLibrary: Boolean = false): [SpotifyPlaylistImportResult!]!
+
+  """Get Soundtrack tracks using Spotify playlist uris."""
+  getTracksFromSpotifyPlaylists(connectionId: String!, spotifyPlaylistUris: [String!]!): [SpotifyTrackMappings!]!
+
+  """Update metadata on playlists imported from Spotify"""
+  updateSpotifyPlaylistMetadata(playlistId: ID!, playOrder: PlayOrder = linear): Playlist
+
+  """Refresh playlists imported from Spotify"""
+  refreshSpotifyPlaylists(playlistIds: [ID!]!): [SpotifyPlaylistImportResult!]!
+
+  """Set automatic refresh policy for a playlist"""
+  setSpotifyPlaylistAutoRefreshFrequency(input: SpotifyPlaylistRefreshFrequencyInput!): SpotifyPlaylistRefreshFrequencyResult!
+
+  """
+  Request a song to be reviewed for addition into the Soundtrack readymade playlists
+  """
+  pitchSong(input: PitchSongInput!): PitchSongResponse!
+
+  """Add items to library."""
+  addToLibrary(
+    """Owner ID of the library."""
+    owner: ID!
+
+    """Input data for adding items to the library."""
+    input: AddToLibraryInput!
+  ): Library
+
+  """Remove items from library."""
+  removeFromLibrary(
+    """Owner ID of the library."""
+    owner: ID!
+
+    """Input data for removing items from the library."""
+    input: RemoveFromLibraryInput!
+  ): Library
+
+  """Tag library items"""
+  tagLibraryItems(owner: ID!, input: TagLibraryItemsInput!): Library @deprecated(reason: "EXPERIMENTAL")
+
+  """Untag library items"""
+  untagLibraryItems(owner: ID!, input: UntagLibraryItemsInput!): Library @deprecated(reason: "EXPERIMENTAL")
+
+  """Update a billingGroup and its properties."""
+  billingGroupUpdate(input: BillingGroupUpdateInput!): BillingGroupUpdatePayload
+
+  """Update the billing cycle for an account."""
+  billingCycleUpdate(input: UpdateBillingCycleInput!): BillingCycleUpdatePayload
+
+  """
+  Cancel a subscription. The sound zone will still be able to play music until its paid until date is passed.
+  """
+  subscriptionCancel(input: SubscriptionCancelInput!): SubscriptionCancelPayload
+
+  """Activate a subscription."""
+  subscriptionActivate(input: SubscriptionActivateInput!): SubscriptionActivatePayload @deprecated(reason: "Use the cart api (cartCreate / addStreamingToCart / cartCheckout) instead.")
+
+  """Create a cart for an account."""
+  cartCreate(input: CartCreateInput!): CartCreatePayload
+
+  """
+  Add an add-on or similar product to a cart. For streaming music, use addStreamingToCart.
+  """
+  addToCart(input: AddToCartInput!): AddToCartPayload
+
+  """Add a sound zone to a cart."""
+  addStreamingToCart(input: AddStreamingToCartInput!): AddToCartPayload
+
+  """Update a cart."""
+  cartUpdate(input: UpdateCartInput!): CartUpdatePayload
+
+  """Check out a cart."""
+  cartCheckout(input: CartCheckoutInput!): CartCheckoutPayload @deprecated(reason: "Use cartCheckoutAsync instead.")
+
+  """Check out a cart."""
+  cartCheckoutAsync(input: CartCheckoutInput!): CartCheckoutAsyncPayload
+
+  """Deactivate an add-on."""
+  addOnDeactivate(input: AddOnDeactivateInput!): AddOnDeactivatePayload
+
+  """Reactivate an add-on that has not yet expired."""
+  addOnReactivate(input: AddOnReactivateInput!): AddOnReactivatePayload
+
+  """Change an account plan."""
+  accountChangePlan(accountId: ID!, toPlan: Plan!, priceToken: String!): AccountChangePlanPayload
+
+  """Submit a tax exempt form."""
+  taxExemptFormSubmit(input: AccountTaxExemptFormUpsertInput!): AccountTaxExemptForm
+
+  """Delete a tax exempt form."""
+  taxExemptFormDelete(id: String!): AccountTaxExemptForm
+
+  """Activate invoice."""
+  accountActivateInvoice(id: ID!): BillingGroup
+
+  """Login a user with a email/password combination."""
+  loginUser(input: LoginUserInput!): LoginUserPayload
+
+  """Login using a device's credentials."""
+  loginDevice(input: LoginDeviceInput!): LoginDevicePayload
+
+  """Generate an OTP (one time password) using a users tokens."""
+  generateOTP(input: GenerateOTPInput!): GenerateOTPPayload
+
+  """Login using an OTP (one time password)."""
+  loginOTP(input: LoginOTPInput!): LoginOTPPayload
+
+  """Request a new token using a refresh token."""
+  refreshLogin(input: RefreshLoginInput!): RefreshLoginPayload
+
+  """
+  Generate a streaming url for playback from a sound zone. Requires the url stream add-on.
+  """
+  generateStreamingUrl(input: GenerateStreamingUrlInput!): GenerateStreamingUrlPayload @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Pair a device using a code."""
+  devicePair(input: DevicePairInput!): DevicePairPayload
+
+  """Start playback for a sound zone."""
+  play(input: PlayInput!): PlayPayload
+
+  """Pause playback for a sound zone."""
+  pause(input: PauseInput!): PausePayload
+
+  """Skip the current playing track for a sound zone."""
+  skipTrack(input: SkipTrackInput!): SkipTrackPayload
+
+  """Skip x number of tracks for a playing sound zone."""
+  skipTracks(input: SkipTracksInput!): SkipTrackPayload
+
+  """Set the volume of a sound zone."""
+  setVolume(input: SetVolumeInput!): SetVolumePayload
+
+  """Pair a device to a sound zone using a pairing code."""
+  soundZonePairDevice(input: SoundZonePairDeviceInput!): SoundZonePairDevicePayload @deprecated(reason: "EXPERIMENTAL")
+
+  """Unpair a device paired to a sound zone."""
+  soundZoneUnpair(input: SoundZoneUnpairInput!): SoundZoneUnpairPayload
+
+  """Initiate a pairing process for a sound zone."""
+  soundZoneInitiatePairing(input: SoundZoneInitiatePairingInput!): SoundZoneInitiatePairingPayload
+
+  """Change playback source of a sound zone."""
+  setPlayFrom(input: SetPlayFromInput!): SetPlayFromPayload
+
+  """Create a location and a first sound zone under it."""
+  locationCreate(input: LocationCreateInput!): LocationCreatePayload
+
+  """Update a location and its properties."""
+  locationUpdate(input: LocationUpdateInput!): LocationUpdatePayload
+
+  """Create a sound zone under a location."""
+  soundZoneCreate(input: SoundZoneCreateInput!): SoundZoneCreatePayload
+
+  """Update a sound zones properties."""
+  soundZoneUpdate(input: SoundZoneUpdateMutationInput!): SoundZoneUpdateMutationPayload
+
+  """Deletes a sound zone."""
+  soundZoneDelete(input: SoundZoneDeleteInput!): SoundZoneDeletePayload
+
+  """Cancel a sound zone's upcoming streaming type change, if any."""
+  soundZoneCancelUpcomingStreamingTypeChange(input: SoundZoneCancelUpcomingStreamingTypeChangeInput!): SoundZoneCancelUpcomingStreamingTypeChangePayload
+
+  """Set settings on sound zones."""
+  soundZoneUpdateSettings(input: SoundZoneUpdateSettingsInput!): SoundZoneUpdateSettingsPayload
+
+  """Assign play source to sound zones."""
+  soundZoneAssignSource(input: SoundZoneAssignSourceInput!): SoundZoneAssignSourcePayload
+
+  """Queue tracks to a sound zone."""
+  soundZoneQueueTracks(input: SoundZoneQueueTracksInput!): SoundZoneQueueTracksPayload
+
+  """Clear all queued tracks for a sound zone."""
+  soundZoneClearQueuedTracks(input: SoundZoneClearQueuedTracksInput!): SoundZoneClearQueuedTracksPayload
+
+  """Sets the playback order of a sound zone."""
+  soundZoneSetPlaybackOrder(input: SoundZoneSetPlaybackOrderInput!): SoundZoneSetPlaybackOrderPayload
+
+  """Generates a new remote code for the sound zone, used by our remotes."""
+  soundZoneGenerateRemoteCode(input: SoundZoneGenerateRemoteCodeInput!): SoundZoneGenerateRemoteCodePayload
+
+  """Submit a cancellation reason for a sound zone."""
+  soundZoneSubmitCancellationReason(input: SoundZoneSubmitCancellationReasonInput!): SoundZoneSubmitCancellationReasonPayload
+
+  """Create SAML config for an account."""
+  samlConfigCreate(input: SAMLConfigCreateInput!): SAMLConfig
+
+  """Update SAML config for an account."""
+  samlConfigUpdate(input: SAMLConfigUpdateInput!): SAMLConfig
+
+  """Update an account and its properties."""
+  accountUpdate(input: AccountUpdateInput!): AccountUpdatePayload
+
+  """Add a user to an account."""
+  accountAddUser(input: AccountAddUserInput!): AccountAddUserPayload
+
+  """Remove a user from an account."""
+  accountRemoveUser(input: AccountRemoveUserInput!): AccountRemoveUserPayload
+
+  """Update a user's role for a specific account."""
+  accountUpdateUserRoles(input: AccountUpdateUserRolesInput!): AccountUpdateUserRolesPayload
+
+  """Update a users properties."""
+  userUpdate(input: UserUpdateMutationInput!): UserUpdateMutationPayload
+
+  """Update a users email."""
+  userChangeEmail(input: UserChangeEmailMutationInput!): UserChangeEmailMutationPayload
+
+  """Change a users password."""
+  userChangePassword(input: UserChangePasswordMutationInput!): UserChangePasswordMutationPayload
+
+  """Register a new account."""
+  accountRegister(input: AccountRegisterInput!): AccountRegisterPayload
+
+  """Invite a user to a location."""
+  locationInviteUser(input: LocationInviteUserInput!): PendingUser @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Remove an invitation from a location."""
+  invitationRemove(input: LocationRemoveInvitationInput!): LocationRemoveInvitationPayload @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Remove a user from a location."""
+  locationRemoveUser(input: LocationRemoveUserInput!): LocationRemoveUserPayload @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Accept a user invitation"""
+  userAcceptInvitation(input: UserAcceptInvitationInput!): UserAcceptInvitationResponse @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Update the role for a user on a location."""
+  userUpdateLocationRoles(input: UserUpdateLocationRolesInput!): UserUpdateLocationRolesPayload @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Update the role for a user invitation to a location."""
+  updateLocationUserInvitationRoles(input: UserUpdateLocationInvitationRolesInput!): UserUpdateLocationInvitationRolesPayload @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Resend the invitation"""
+  invitationResend(input: LocationResendInvitationInput!): PendingUser @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Link an account to an external id."""
+  accountLinkToExternalId(input: LinkAccountToExternalIdInput!): Account
+
+  """"""
+  createPlaylist(input: CreatePlaylistInput!): Playlist @deprecated(reason: "Replaced by `createManualPlaylist.`")
+
+  """Creates an new `manual` playlist."""
+  createManualPlaylist(input: CreateManualPlaylistInput!): Playlist
+
+  """Updates info for a `manual` playlist."""
+  updateManualPlaylist(input: UpdateManualPlaylistInfoInput!): Playlist
+
+  """Creates an new `spotify-composer` playlist."""
+  createSpotifySyncedPlaylist(input: CreateSpotifySyncedPlaylistInput!): CreateSpotifySyncedPlaylistPayload
+
+  """Updates info for a `spotify-composer` playlist."""
+  updateSpotifyPlaylist(input: UpdateSpotifySyncedPlaylistInput!): Playlist
+
+  """
+  Force a sync between the underlying Spotify Playlist and the `spotify-composer` playlist
+  """
+  syncSpotifySyncedPlaylist(input: SyncSpotifySyncedPlaylistInput!): Boolean
+
+  """Creates an new `seed-composer` playlist."""
+  createStationFromPlaylist(input: CreateStationFromPlaylistInput!): CreateStationFromPlaylistPayload
+
+  """Updates info for a `seed-composer` playlist."""
+  updateStationFromPlaylist(input: UpdateStationFromPlaylistInput!): Playlist
+
+  """
+  Splices the tracks of a `manual` playlist. This mutation changes the contents of a playlist by removing or replacing existing tracks and/or adding new tracks in place. API inspired by the JS `Array.splice` method.
+  """
+  spliceManualPlaylist(input: SplicePlaylistInput!): Playlist
+
+  """Add a playlist or a schedule to a music library."""
+  addToMusicLibrary(input: AddToMusicLibraryInput!): AddToMusicLibraryPayload
+
+  """Remove a playlist or a schedule from a music library."""
+  removeFromMusicLibrary(input: RemoveFromMusicLibraryInput!): RemoveFromMusicLibraryPayload
+
+  """block a track for a sound zone."""
+  blockTrack(input: BlockTrackInput!): BlockTrackPayload
+
+  """unblock a track for a sound zone."""
+  unblockTrack(input: UnblockTrackInput!): UnblockTrackPayload
+
+  """Create a schedule."""
+  createSchedule(input: CreateScheduleInput!): Schedule
+
+  """Update a schedule."""
+  updateSchedule(input: UpdateScheduleInput!): Schedule
+}
+
+""""""
+type NetTotalCost {
+  """"""
+  price: Float!
+
+  """"""
+  currency: String!
+}
+
+""""""
+interface Node {
+  """"""
+  id: ID!
+}
+
+""""""
+type NotAccepted {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+type NotApplicable {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+"""What's currently playing at a sound zone."""
+type NowPlaying {
+  """"""
+  soundZone: ID!
+
+  """
+  When playback was started. A date-time with time-zone in the ISO-8601 format.
+  """
+  startedAt: Date
+
+  """The PlaybackSource the current track is from."""
+  playFrom: PlaybackSource
+
+  """"""
+  track(market: IsoCountry): Track
+}
+
+""""""
+input NowPlayingUpdateInput {
+  """"""
+  soundZone: ID!
+}
+
+""""""
+type NowPlayingUpdatePayload {
+  """"""
+  nowPlaying: NowPlaying!
+}
+
+""""""
+type OldImage {
+  """"""
+  url: String
+
+  """"""
+  height: Int
+
+  """"""
+  width: Int
+}
+
+"""
+The progress of a specific step in the onboarding for a specific account.
+"""
+type OnboardingStep {
+  """
+  The name of the step, be consistent when choosing and using names to avoid having multiple steps representing the same step. Case sensitive.
+  """
+  name: String!
+
+  """The step's current status."""
+  status: OnboardingStepStatus!
+
+  """An ISO8601 string for when the step status was last updated."""
+  updatedAt: String!
+}
+
+""""""
+input OnboardingStepInput {
+  """ID of the account that this step should be set for."""
+  account: ID!
+
+  """
+  The name of the step, used to keep track of the step's status. If the status is set again for the same name the status is updated.
+  """
+  name: String!
+
+  """Current status for the onboarding-step."""
+  status: OnboardingStepStatus!
+}
+
+"""The current onboarding progress of the account that was just updated."""
+type OnboardingStepResponse {
+  """"""
+  onboardingSteps: [OnboardingStep!]!
+}
+
+enum OnboardingStepStatus {
+  """Status for onboarding-steps that have been completed."""
+  Completed
+
+  """Status for onboarding-steps that have been started but not finished."""
+  InProgress
+
+  """Status for onboarding-steps that have been skipped."""
+  Skipped
+}
+
+enum Ordering {
+  """"""
+  ASC
+
+  """"""
+  DESC
+}
+
+"""Pagination details for this connection"""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
+""""""
+type Palette {
+  """"""
+  backgroundPrimary: Color
+}
+
+""""""
+type Partner {
+  """"""
+  id: ID!
+
+  """"""
+  businessName: String!
+
+  """"""
+  hasSupport: Boolean!
+
+  """"""
+  partnerType: PartnerType!
+}
+
+enum PartnerType {
+  """"""
+  AFFILIATE
+
+  """"""
+  DEFAULT
+
+  """"""
+  RESELLER
+}
+
+""""""
+input PauseInput {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: ID!
+}
+
+""""""
+type PausePayload {
+  """"""
+  clientMutationId: String
+
+  """"""
+  status: String
+
+  """"""
+  soundZone: ID!
+}
+
+""""""
+interface PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodApplePay implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodCreditCard implements PaymentMethod {
+  """"""
+  id: ID!
+
+  """"""
+  lastFour: String!
+
+  """"""
+  expiryYear: String!
+
+  """"""
+  expiryMonth: String!
+
+  """"""
+  cardType: CreditCardType!
+}
+
+""""""
+type PaymentMethodDistributor implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodGooglePay implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodIdeal implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodInvoice implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodNotSet implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+""""""
+type PaymentMethodPayPal implements PaymentMethod {
+  """"""
+  id: ID!
+}
+
+"""An invited user."""
+type PendingUser {
+  """Email of the user."""
+  email: String!
+
+  """Id of the invitation"""
+  id: String! @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Location id the user is invited to join."""
+  locationId: String! @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """The roles the user will assume by accepting this invitation"""
+  roles: [String!]! @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """The email of the user who initiated this invitation"""
+  invitedBy: InvitedBy @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """"""
+  expiresAt: Instant
+}
+
+""""""
+type Period {
+  """"""
+  from: Instant!
+
+  """"""
+  to: Instant!
+
+  """Non-prorated price per month"""
+  unitPrice: Float!
+
+  """Price per month"""
+  price: Float!
+}
+
+""""""
+input PitchSongInput {
+  """The Spotify Track URI, eg. `spotify:track:<id>`"""
+  spotifyTrackUri: ID!
+
+  """
+  A list of genres that this song is applicable to. Max allowed length: 2
+  """
+  genres: [String!]!
+
+  """The release year of the track"""
+  releaseYear: Int!
+
+  """The record label of ths track"""
+  recordLabel: String!
+
+  """The name of the person making the request"""
+  contactName: String!
+
+  """The email address that will recieve notifications about this song"""
+  contactEmailAddress: String!
+
+  """Pass `false` if Soundtrack should send notifications about this song"""
+  sendNotifications: Boolean! = true
+}
+
+""""""
+type PitchSongResponse {
+  """Returns `ok` if the request was handled successfully"""
+  result: String!
+}
+
+enum Plan {
+  """"""
+  ESSENTIAL
+
+  """"""
+  ROYALTY_FREE
+
+  """"""
+  SOUNDTRACK
+
+  """"""
+  STARTER
+
+  """"""
+  UNLIMITED
+}
+
+""""""
+type PlanPeriod {
+  """"""
+  from: Instant!
+
+  """"""
+  to: Instant!
+
+  """"""
+  trial: Boolean!
+}
+
+""""""
+input PlayInput {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: ID!
+}
+
+enum PlayOrder {
+  """"""
+  linear
+
+  """"""
+  shuffle
+}
+
+""""""
+type PlayPayload {
+  """"""
+  clientMutationId: String
+
+  """"""
+  status: String
+
+  """"""
+  soundZone: ID!
+}
+
+""""""
+union Playable = Track
+
+""""""
+type PlayableEntry {
+  """"""
+  id: ID!
+
+  """When the playable entry started or will start."""
+  start: Date!
+
+  """
+  Which source, e.g `playlist` or `schedule`, the playable entry belongs to.
+  """
+  source: PlayableSource!
+
+  """The playable entity."""
+  playable: Playable!
+}
+
+""""""
+union PlayableSource = ManuallyQueued | Playlist | ScheduleSource | SmartShuffle
+
+"""Information about the player's playback"""
+type Playback {
+  """"""
+  id: ID!
+
+  """If the device is connected to a sound zone this will be set."""
+  soundZone: ID
+
+  """What playing state the device is in, e.g paused, playing."""
+  state: PlaybackState
+
+  """The currently assigned playlist or schedule."""
+  playFrom: PlaybackSource
+
+  """"""
+  nextSlotStartsAt: Date @deprecated(reason: "EXPERIMENTAL: temporary field")
+
+  """The volume the device has right now."""
+  volume: Volume
+
+  """The position in the currently playing track."""
+  progress: PlaybackProgress @deprecated(reason: "experimental")
+
+  """
+  The playback mode of the device, `shuffle`, `linear` or `auto`, where `auto` is that the context has it configured.
+  """
+  playbackMode: PlaybackOrder @deprecated(reason: "EXPERIMENTAL")
+
+  """The currently playing track."""
+  current: PlayableEntry @deprecated(reason: "EXPERIMENTAL")
+
+  """The upcoming tracks in the queue."""
+  upcoming: [PlayableEntry!] @deprecated(reason: "EXPERIMENTAL")
+}
+
+enum PlaybackMode {
+  """Play the playlist from first to last track and repeat."""
+  linear
+
+  """"""
+  random_start @deprecated(reason: "Unsupported. Similar experience can be achived by using `linear`.")
+
+  """Play the playlist in random order."""
+  shuffle
+
+  """"""
+  smart_shuffle @deprecated(reason: "EXPERIMENTAL: This feature is under development and can change at any time.")
+}
+
+enum PlaybackOrder {
+  """"""
+  AUTO
+
+  """"""
+  LINEAR
+
+  """"""
+  SHUFFLE
+
+  """"""
+  SMART_SHUFFLE
+}
+
+""""""
+type PlaybackProgress {
+  """"""
+  progressMs: Int!
+
+  """"""
+  updatedAt: Date!
+}
+
+""""""
+input PlaybackReportingContextInput {
+  """"""
+  playlist: PlaylistReportingInput
+
+  """"""
+  schedule: ScheduleReportingInput
+}
+
+""""""
+input PlaybackReportingInput {
+  """"""
+  reportingId: ID!
+
+  """"""
+  startedAt: Date!
+
+  """"""
+  finishedAt: Date!
+
+  """"""
+  totalDurationPlayedMs: Int!
+
+  """"""
+  transition: PlaybackReportingTransition!
+
+  """"""
+  track: TrackReportingInput!
+
+  """"""
+  device: DeviceReportingInput!
+
+  """"""
+  context: PlaybackReportingContextInput!
+}
+
+enum PlaybackReportingTransition {
+  """"""
+  crash
+
+  """"""
+  natural
+
+  """"""
+  skip
+}
+
+"""Music sources that can be or is assigned to a sound zone."""
+union PlaybackSource = Playlist | Schedule | Soundtrack
+
+enum PlaybackState {
+  """"""
+  not_supported
+
+  """"""
+  offline
+
+  """"""
+  paused
+
+  """"""
+  playing
+
+  """"""
+  unpaired
+}
+
+""""""
+input PlaybackUpdateInput {
+  """"""
+  soundZone: ID!
+}
+
+""""""
+type PlaybackUpdatePayload {
+  """"""
+  playback: Playback!
+}
+
+"""A Playlist."""
+type Playlist implements Displayable & Assignable & Node {
+  """"""
+  id: ID!
+
+  """Find other playlists similar to this one."""
+  similarPlaylists(first: Int = null, last: Int = null, before: String = null, after: String = null): SimilarPlaylistConnection
+
+  """How to present the playlist visually."""
+  display: Display
+
+  """"""
+  browseCategories(categoryTypes: [String!]): [BrowseCategory]
+
+  """library item tags"""
+  libraryTags(libraryOwner: String!): [LibraryItemTag!] @deprecated(reason: "EXPERIMENTAL")
+
+  """
+  `true` if this playlist is in the specified music library or `false` if not.
+  """
+  inMusicLibrary(library: ID!): Boolean
+
+  """
+  When the playlist was created. A date-time with time-zone in the ISO-8601 format.
+  """
+  createdAt: Date!
+
+  """
+  The snapshot is an opaque version of the playlist that will change on every update. Include on mutations to avoid overwriting unseen changes.
+  """
+  snapshot: String!
+
+  """
+  The name of the playlist. Manually or automatically set depending on composer.
+  """
+  name: String!
+
+  """
+  A short description of the playlist used where the UI space is tight. Not set for all composers.
+  """
+  shortDescription: String!
+
+  """A longer description of the playlist. Not set for all composers."""
+  description: String!
+
+  """"""
+  type: PlaylistType! @deprecated(reason: "Replaced by `presentAs`.")
+
+  """
+  How this playlist should  be presented. Examples: `station`, `playlist`.
+  """
+  presentAs: PlaylistPresentAs!
+
+  """
+  The composer responsible for a playlist. May include metadata relevant to the composer.
+  """
+  composer: PlaylistComposer
+
+  """
+  The name of the composer responsible for a playlist. Examples: `manual`, `recipe-composer`.
+  """
+  composerType: String!
+
+  """How the playlist should be played back by default."""
+  presets: Presets!
+
+  """`true` if this playlist is curated by a curator, `false` otherwise."""
+  curated: Boolean
+
+  """The curator of the playlist."""
+  curator: Curator
+
+  """"""
+  presentation(product: Product = soundtrack): Presentation @deprecated(reason: "Replaced by `display`.")
+
+  """The Date when a playlist was updated."""
+  updatedAt: Date!
+
+  """Statistics calculated from the tracks of this playlist."""
+  trackStatistics(market: IsoCountry!): TrackStatistics
+
+  """The tracks of the playlist."""
+  tracks(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    country: String
+
+    """
+    If provided it will return tracks suitable for playback in the particular market.
+    """
+    market: IsoCountry
+  ): PlaylistTracksConnection
+
+  """
+  The main genres of the playlist's tracks. Only available on some centrally curated playlists.
+  """
+  genres(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+  ): PlaylistGenresConnection
+
+  """The permissions associated with this playlist."""
+  permissions: [PlaylistPermission!]
+}
+
+""""""
+union PlaylistArtistTrackAlbumBrowseCategory = Playlist | Artist | Track | Album | BrowseCategory | Schedule | EditorialCard
+
+"""The composer describes how a playlist is created and updated."""
+union PlaylistComposer = ArtistComposer | CuratorComposer | ExternalSpotifyComposer | Manual | RadioPlaylistComposer | RecipeComposer | SeedComposer | SimpleRecipeComposer | SpotifyComposer
+
+""""""
+type PlaylistEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: Playlist!
+}
+
+enum PlaylistField {
+  """"""
+  NAME @deprecated(reason: "Will be ignored.")
+}
+
+""""""
+type PlaylistGenre {
+  """"""
+  name: String!
+}
+
+""""""
+type PlaylistGenresConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [PlaylistGenresEdge!]!
+}
+
+""""""
+type PlaylistGenresEdge {
+  """The genre node for this edge"""
+  node: PlaylistGenre!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+}
+
+"""
+The output for the playlist packaging recommendation. Contains a recommended playlist packaging and a conversation id.
+"""
+type PlaylistPackagingRecommendation {
+  """"""
+  playlistPackaging: RecommendedPlaylistPackaging!
+
+  """"""
+  conversationId: ID!
+}
+
+"""
+The input for the playlist packaging recommendation. tracks or prompt must be non-null.
+"""
+input PlaylistPackagingRecommendationInput {
+  """"""
+  trackIds: [ID!] = null
+
+  """"""
+  prompt: String = null
+
+  """"""
+  conversationId: ID = null
+}
+
+enum PlaylistPermission {
+  """"""
+  READ
+
+  """"""
+  WRITE
+}
+
+enum PlaylistPresentAs {
+  """
+  Present as playlist means to display the playlist as a finite set of tracks that has an order.
+  """
+  playlist
+
+  """
+  Display the playlist as an endless, unordered flow of music similar to a radio station.
+  """
+  station
+}
+
+"""A playlist prompt suggestion to display in the UI"""
+type PlaylistPromptSuggestion {
+  """"""
+  title: String!
+
+  """"""
+  suggestions: [String!]!
+}
+
+""""""
+type PlaylistReference {
+  """"""
+  playlist: Playlist
+}
+
+""""""
+input PlaylistReportingInput {
+  """"""
+  id: ID!
+}
+
+""""""
+type PlaylistTracksConnection {
+  """Total number of tracks for this connection"""
+  total: Int!
+
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [PlaylistTracksEdge!]!
+
+  """The Date when a playlist was updated."""
+  updatedAt: Date!
+}
+
+""""""
+type PlaylistTracksEdge {
+  """The track node for this edge"""
+  node: Track!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """"""
+  weight: Int! @deprecated(reason: "Will always be 0.")
+
+  """
+  When the track was added to this playlist. If missing there is no recorded time for when this happened. A date-time with time-zone in the ISO-8601 format.
+  """
+  addedAt: Date
+}
+
+enum PlaylistType {
+  """"""
+  playlist
+
+  """"""
+  station
+}
+
+""""""
+input PlaylistUpdateInput {
+  """"""
+  playlist: ID!
+}
+
+""""""
+type PlaylistUpdatePayload {
+  """"""
+  playlist: Playlist!
+}
+
+""""""
+type PlaylistsEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: Playlist!
+}
+
+""""""
+type PotentialLocationRange {
+  """"""
+  from: Int!
+
+  """"""
+  to: Int!
+}
+
+""""""
+input PotentialLocationRangeInput {
+  """"""
+  from: Int!
+
+  """"""
+  to: Int!
+}
+
+""""""
+type Presentation {
+  """"""
+  image: Thumbnails @deprecated(reason: "Replaced by `display.image`.")
+
+  """"""
+  colors: ColorPair @deprecated(reason: "Replaced by `display.colors`.")
+}
+
+""""""
+type Presets {
+  """"""
+  playbackMode: PlaybackMode
+}
+
+"""Price information based on product id"""
+type PriceList {
+  """"""
+  product: BillingProduct
+
+  """"""
+  billingCycle: String!
+
+  """"""
+  isoCurrency: String!
+
+  """"""
+  prices: [Float!]!
+
+  """"""
+  recurring: RecurringCost
+
+  """"""
+  appliedDiscount: AppliedDiscount
+
+  """"""
+  trialLength: TrialLength!
+}
+
+enum Product {
+  """"""
+  soundtrack
+
+  """"""
+  spotify
+}
+
+"""All available prices for a provided list of product ids"""
+type ProductPrice {
+  """"""
+  priceList: [PriceList!]!
+
+  """"""
+  voucher: Voucher
+}
+
+""""""
+type PublicAPIClient {
+  """"""
+  id: ID!
+
+  """All accounts connected to this client."""
+  accounts(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: PublicAPIClientAccountOrderInput! = {field: BUSINESS_NAME, direction: ASC}
+  ): PublicAPIClientAccountConnection
+}
+
+""""""
+type PublicAPIClientAccountConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [PublicAPIClientAccountEdge!]!
+
+  """Total number of Account for this connection"""
+  total: Int!
+}
+
+""""""
+type PublicAPIClientAccountEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The Account node for this edge"""
+  node: Account
+}
+
+enum PublicAPIClientAccountField {
+  """"""
+  BUSINESS_NAME
+}
+
+""""""
+input PublicAPIClientAccountOrderInput {
+  """"""
+  field: PublicAPIClientAccountField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type Query {
+  """"""
+  helloPlaybackReporting: String!
+
+  """"""
+  scheduleTemplates: [Schedule!]! @deprecated(reason: "test")
+
+  """"""
+  dummyAccountCohortApiQuery: Boolean! @deprecated(reason: "test")
+
+  """Get list of cities that can be used with marvin explorer"""
+  marvinExplorerCities: [String!]!
+
+  """Get data for city for marvin explorer"""
+  marvinExplorerCity(city: String!): MarvinCity
+
+  """"""
+  schedulePlaylistSuggestions(slots: [ScheduleSuggestionContextSlots], scheduleId: ID, first: Int = null, last: Int = null, after: String = null, before: String = null): SchedulePlaylistSuggestions! @deprecated(reason: "test")
+
+  """Browse Category"""
+  browseCategory(id: ID!): BrowseCategory
+
+  """"""
+  browseCategories(first: Int = null, after: String = null): BrowseCategoryDisplayableConnection @deprecated(reason: "do_not_use")
+
+  """Editorial Browse Page"""
+  editorialBrowse(id: String!): BrowsePage
+
+  """"""
+  _growth_api: String!
+
+  """Returns the editorial page for an artist"""
+  editorialArtist(id: String!): ArtistPage
+
+  """Returns the editorial page for a track"""
+  editorialTrack(id: String!): TrackPage!
+
+  """Get playlist prompt suggestions to display in the UI."""
+  playlistPromptSuggestion: [PlaylistPromptSuggestion!]!
+
+  """
+  Get a custom playlist packaging for a list of tracks and/or prompt! Includes title and description
+  """
+  playlistPackagingRecommendation(input: PlaylistPackagingRecommendationInput!): PlaylistPackagingRecommendation!
+
+  """Get tracks from a prompt!"""
+  getTracksFromPrompt(prompt: String!, after: String = null, first: Int = null, before: String = null, last: Int = null): TracksFromPromptConnection!
+
+  """Editorial Home Page"""
+  editorialHome(id: String!): HomePage
+
+  """"""
+  searchByTags(market: IsoCountry!, filters: [MusicTagInputFilter!] = [], after: String = null, first: Int = null, before: String = null, last: Int = null, id: String = null): MusicTagSearchConnection
+
+  """Search"""
+  editorialSearch(id: String!): SearchPage
+
+  """Get playlists recommendations"""
+  getMusicFromPrompt(query: String!, context: String = null, captchaStr: String = null, offset: Int = null, limit: Int = null, trackingId: String = null): CatalystPlaylistOutput! @deprecated(reason: "EXPERIMENTAL")
+
+  """Returns some flags for a given context."""
+  flags(properties: GetFlagsContextInput!, flags: [String!] = []): FlagsResponse! @deprecated(reason: "TEST")
+
+  """"""
+  getAccountAnnouncements(accountId: ID!, filterArchived: Boolean = true): [Announcement!]! @deprecated(reason: "EXPERIMENTAL: do not use")
+
+  """"""
+  announcement(id: ID!): Announcement @deprecated(reason: "EXPERIMENTAL: do not use")
+
+  """"""
+  announcementCampaign(id: ID!): AnnouncementCampaign @deprecated(reason: "EXPERIMENTAL: do not use")
+
+  """"""
+  getAccountCampaigns(accountId: ID!, filterArchived: Boolean = true): [AnnouncementCampaign!]! @deprecated(reason: "EXPERIMENTAL: do not use")
+
+  """Returns the radio playlist for another type"""
+  radioPlaylist(id: ID!, kind: RadioPlaylistKind = null): RadioPlaylistComposer @deprecated(reason: "Experimental: Do not use.")
+
+  """"""
+  partnerGraph: String!
+
+  """Get composer data for a playlist id"""
+  getExternalSpotifyComposerData(id: ID!): ExternalSpotifyComposerData!
+
+  """Get Soundtrack tracks using Spotify track uris."""
+  getTracksFromSpotifyTracks(connectionId: String!, spotifyTrackUris: [String!]!): [Track]! @deprecated(reason: "test")
+
+  """Hello world!"""
+  aiOnboarding(input: AIOnboardingInput!): AIOnboardingResponse! @deprecated(reason: "TEST")
+
+  """Playlist Editor Track Suggestions"""
+  playlistEditorTrackSuggestions(tracks: [ID!]!, first: Int = null, after: String = null, contextId: String = null): RecommendedTracksConnection!
+
+  """Library containing user saved content."""
+  library(
+    """Owner ID of the library."""
+    owner: ID!
+  ): Library
+
+  """Available self service products"""
+  products(countryCode: String!): [BillingProduct!]
+
+  """Get product price"""
+  price(products: [ID!]!, countryCode: String, account: ID, voucherCode: String, itemType: String, onlySelfService: Boolean): ProductPrice
+
+  """Get a cart by its ID."""
+  cart(id: ID!): Cart
+
+  """Get a subscriptionItem by its ID."""
+  subscriptionItem(id: ID!): SubscriptionItem
+
+  """Get a checkout session by its ID."""
+  checkoutSession(id: ID!): CheckoutSession
+
+  """Get a list of prices for streaming music"""
+  streamingPrice(countryCode: String, voucherCode: String, accountId: ID, soundZoneId: ID, billingCycle: String, includeAllPlans: Boolean, includeAllBillingCycles: Boolean, mixedTiers: Boolean): StreamingPrice
+
+  """Get the cost for changing plan"""
+  changePlanCost(accountId: ID!, toPlan: Plan!, fromPlan: Plan!): AccountChangePlanCost
+
+  """Get an account plan change session"""
+  changePlanSession(id: ID!): ChangePlanSession
+
+  """Get required tax fields for buyer and seller countries"""
+  requiredTaxFields(buyerCountry: String!, sellerCountry: String!): [TaxRequiredFields!]
+
+  """Get a user by its ID."""
+  user(id: ID!): User
+
+  """Get an account by its ID."""
+  account(id: ID!): Account
+
+  """Find a device by ID."""
+  device(id: ID!): Device
+
+  """Get a sound zone by its ID."""
+  soundZone(id: ID!): SoundZone
+
+  """Get a location by its ID."""
+  location(id: ID!): Location
+
+  """"""
+  intercomHash: String
+
+  """
+  The main entry point to begin querying and exploring the API. Returns different nodes depending on the current API session.
+  """
+  me: Viewer
+
+  """Find entities implementing the node interface by ID."""
+  node(id: ID!): Node
+
+  """Get the calculated complexity for a query."""
+  queryInfo: QueryInfo @deprecated(reason: "Use the headers x-ratelimiting-cost and x-ratelimiting-tokens-available instead.")
+
+  """Get a saml config by its account."""
+  samlConfig(id: ID!): SAMLConfig
+
+  """Check if a slug is available."""
+  samlIsEnabled(slug: String!): Boolean
+
+  """
+  Get a streaming url for playback from a sound zone. Requires the url stream add-on.
+  """
+  getStreamingUrl(soundZone: ID!): GenerateStreamingUrlPayload @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """"""
+  accountEnums: AccountEnums
+
+  """Get a location invitation by its ID."""
+  invitation(id: ID!): PendingUser
+
+  """"""
+  invitationValidate(
+    """The input for validating an invitation"""
+    input: InvitationValidateInput!
+  ): InvitationValidatePayload
+
+  """"""
+  nearbySoundZones(latitude: Float!, longitude: Float!, radius: Int!, online: Boolean, first: Int!): SoundZonePublicConnection @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Get a single artist identified by their unique ID"""
+  artist(id: ID!): Artist
+
+  """Get a single album identified by its unique ID"""
+  album(id: ID!): Album
+
+  """Get a playlist by its unique ID."""
+  playlist(id: ID!): Playlist
+
+  """Get many(max 500) tracks by ID."""
+  tracks(
+    """Will be truncated to the first 500 ids"""
+    ids: [ID!]!
+
+    """
+    If provided it will return tracks suitable for playback in the particular market.
+    """
+    market: IsoCountry
+  ): [Track]
+
+  """Get a music library using the owner ID."""
+  musicLibrary(id: ID!): MusicLibrary
+
+  """Get a schedule by its unique ID."""
+  schedule(id: ID!): Schedule
+
+  """Find the currently playing track for a sound zone using its ID."""
+  nowPlaying(soundZone: ID!): NowPlaying
+
+  """Search for one of: albums, artists, tracks, playlists and categories."""
+  search(after: String, first: Int, query: String!, type: SearchType!, market: IsoCountry): SearchResultConnection
+
+  """"""
+  activityLog: String!
+}
+
+""""""
+type QueryInfo {
+  """"""
+  complexity: Int!
+}
+
+""""""
+input QuestionnaireInput {
+  """"""
+  account: ID!
+
+  """"""
+  potentialNumberOfLocations: PotentialLocationRangeInput!
+
+  """"""
+  companyRole: String!
+
+  """"""
+  previousMusicProvider: String!
+}
+
+""""""
+type QuestionnaireResponse {
+  """"""
+  account: Account!
+
+  """"""
+  user: User!
+}
+
+"""A radio playlist for another type, eg. a track or artist."""
+type RadioPlaylistComposer {
+  """The ID of the radio playlist"""
+  id: ID!
+
+  """The ID of the composer"""
+  composerId: ID!
+
+  """The reference to the type that created this radio playlist"""
+  ref: RadioPlaylistRef
+
+  """The actual playlist used to play the radio"""
+  playlist: Playlist
+
+  """A list of at most 20 tracks to display for this radio playlist"""
+  displayTracks: [Track!]!
+
+  """The permissions associated with this composer."""
+  permissions: [RadioPlaylistComposerPermission!]
+}
+
+enum RadioPlaylistComposerPermission {
+  """"""
+  WRITE
+}
+
+enum RadioPlaylistKind {
+  """"""
+  TRACK
+
+  """"""
+  ARTIST
+
+  """"""
+  ALBUM
+
+  """"""
+  PLAYLIST
+}
+
+""""""
+union RadioPlaylistRef = Track | Artist | Album | Playlist
+
+enum Reason {
+  """"""
+  bad_context
+
+  """"""
+  dislike
+
+  """"""
+  explicit
+
+  """"""
+  other
+
+  """"""
+  playback
+}
+
+"""Used for playlists created from the createStationFromTags mutation."""
+type RecipeComposer {
+  """"""
+  id: ID!
+
+  """"""
+  tagGroups: [MusicTagGroup!]!
+
+  """The permissions associated with this composer."""
+  permissions: [RecipeComposerPermission!]
+}
+
+enum RecipeComposerPermission {
+  """"""
+  WRITE
+}
+
+"""A recommended playlist packaging."""
+type RecommendedPlaylistPackaging {
+  """"""
+  title: String
+
+  """"""
+  description: String
+}
+
+""""""
+type RecommendedTrackEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: Track!
+}
+
+""""""
+type RecommendedTracksConnection {
+  """"""
+  total: Int!
+
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [RecommendedTrackEdge!]!
+}
+
+""""""
+type RecurringCost {
+  """"""
+  price: Float!
+}
+
+""""""
+type RecurringStreamingCost {
+  """"""
+  price: Float!
+}
+
+""""""
+input RefreshLoginInput {
+  """The refresh token for the logged in entity."""
+  refreshToken: String!
+
+  """"""
+  uriBased: Boolean
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+type RefreshLoginPayload {
+  """The access token for the logged in entity (will expire)."""
+  token: String!
+
+  """The refresh token for the logged in entity."""
+  refreshToken: String!
+
+  """The timestamp for when the access token will expire."""
+  expiresAt: Instant!
+
+  """"""
+  clientMutationId: String
+
+  """A hash only returned for users."""
+  intercomHash: String
+}
+
+""""""
+input RegisterAccountOrigin {
+  """"""
+  utmSource: String!
+
+  """"""
+  utmMedium: String
+
+  """"""
+  utmContent: String
+
+  """"""
+  utmCampaign: String
+
+  """"""
+  clickId: String
+}
+
+"""A timestamp with a given precision."""
+type ReleaseDate {
+  """
+  Release date as a date-time. Use precision to determine which date-time components to honor.
+  """
+  timestamp: Date
+
+  """
+  The precision of the timestamp. Older albums typically have lower precision. Examples: `year`, `month` or `day`
+  """
+  precision: ReleaseDatePrecision
+}
+
+enum ReleaseDatePrecision {
+  """`YYYY-MM-DD`."""
+  day
+
+  """`YYYY-MM`."""
+  month
+
+  """Unspecified by the issuer."""
+  unspecified
+
+  """`YYYY`."""
+  year
+}
+
+""""""
+input RemoveFromLibraryInput {
+  """
+  The library's version is updated on every change. Include in mutation to prevent overwriting unseen changes.
+  """
+  version: String = null
+
+  """List of item IDs to remove from the library."""
+  itemIds: [String!]!
+}
+
+""""""
+input RemoveFromMusicLibraryInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+
+  """
+  Music libraries are identified by the owner/parent of the library. Currently the only supported parent kind is `Account`.
+  """
+  parent: ID!
+
+  """Which source (playlist or schedule) should be removed?."""
+  source: ID!
+}
+
+""""""
+type RemoveFromMusicLibraryPayload {
+  """
+  A unique identifier for the client performing the mutation. Use to match with the id passed to the input.
+  """
+  clientMutationId: String @deprecated(reason: "Will be ignored. Pending immediate removal.")
+
+  """The resulting music library."""
+  musicLibrary: MusicLibrary
+}
+
+enum RequestClass {
+  """"""
+  CRITICAL
+
+  """"""
+  HIGH_FAST
+
+  """"""
+  HIGH_SLOW
+
+  """"""
+  LOW
+
+  """"""
+  NO_SLO
+}
+
+enum Role {
+  """"""
+  ADMIN
+
+  """"""
+  CONTACT
+
+  """"""
+  FINANCE
+
+  """"""
+  OWNER
+
+  """"""
+  USER
+}
+
+""""""
+type SAMLConfig {
+  """The unique slug of this SAML configuration."""
+  slug: String!
+
+  """The connected account for this SAML configuration."""
+  account: ID!
+
+  """"""
+  issuerUrl: String!
+
+  """"""
+  signinUrl: String!
+
+  """"""
+  certificate: String!
+
+  """"""
+  expiresAt: Instant!
+}
+
+""""""
+input SAMLConfigCreateInput {
+  """"""
+  slug: String!
+
+  """"""
+  account: ID!
+
+  """"""
+  idpXML: String!
+}
+
+""""""
+input SAMLConfigUpdateInput {
+  """"""
+  account: ID!
+
+  """"""
+  idpXML: String!
+}
+
+"""
+A schedule of what music should play when, during the course of a week or day.
+"""
+type Schedule implements Displayable & Assignable & Node {
+  """Information about how the schedule should be displayed in UI."""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """library item tags"""
+  libraryTags(libraryOwner: String!): [LibraryItemTag!] @deprecated(reason: "EXPERIMENTAL")
+
+  """
+  `true` if this schedule is in the specified music library or `false` if not.
+  """
+  inMusicLibrary(library: ID!): Boolean
+
+  """Name of the schedule."""
+  name: String!
+
+  """
+  When the schedule was created. A date-time with time-zone in the ISO-8601 format.
+  """
+  createdAt: Date!
+
+  """
+  When the schedule was last updated. A date-time with time-zone in the ISO-8601 format.
+  """
+  updatedAt: Date!
+
+  """
+  The snapshot is an opaque version of the schedule that will change on every update.
+  """
+  snapshot: String!
+
+  """A long description of the schedule. Not set for all schedules."""
+  description: String!
+
+  """
+  A short description of the schedule used where the UI space is tight. Not set for all schedules.
+  """
+  shortDescription: String!
+
+  """
+  How the schedule should be presented. Examples are `weekly` schedule or a `daily` schedule, weekly is default.
+  """
+  presentAs: SchedulePresentAs!
+
+  """
+  Type of the composer responsible for a schedule. Allowed values are `manual-composer` and `zone-composer`, manual is default.
+  """
+  composerType: String!
+
+  """The composer of the schedule."""
+  composer: ScheduleComposer
+
+  """
+  The time slots for the schedule. A time slot describes what music should play during what hours on a specific day of week.
+  """
+  slots: [Slot!]
+
+  """The curator of the schedule."""
+  curator: Curator!
+
+  """List of playlists that are included in the schedule"""
+  playlists: [Playlist!]
+
+  """The permissions associated with this schedule."""
+  permissions: [SchedulePermission!]
+}
+
+""""""
+union ScheduleComposer = ManualScheduleComposer | ZoneScheduleComposer
+
+enum ScheduleField {
+  """"""
+  NAME @deprecated(reason: "Will be ignored.")
+}
+
+enum SchedulePermission {
+  """"""
+  READ
+
+  """"""
+  WRITE
+}
+
+""""""
+type SchedulePlaylistSuggestions {
+  """"""
+  slots: [ScheduleSuggestedSlots]
+
+  """"""
+  sections: EditorialSectionConnection
+}
+
+enum SchedulePresentAs {
+  """Display the daily means ..."""
+  daily
+
+  """Present as weekly means ..."""
+  weekly
+}
+
+""""""
+type ScheduleReference {
+  """"""
+  schedule: Schedule
+}
+
+""""""
+input ScheduleReportingInput {
+  """"""
+  id: ID!
+
+  """"""
+  playlistContext: PlaylistReportingInput
+}
+
+""""""
+type ScheduleSource {
+  """"""
+  schedule: Schedule!
+
+  """"""
+  playlist: Playlist!
+}
+
+""""""
+type ScheduleSuggestedSlots {
+  """"""
+  start: String!
+
+  """"""
+  duration: Int!
+
+  """"""
+  rrule: String!
+
+  """"""
+  playlists: [ID!]!
+}
+
+""""""
+input ScheduleSuggestionContextSlots {
+  """"""
+  start: String!
+
+  """"""
+  duration: Int!
+
+  """"""
+  rrule: String!
+
+  """"""
+  playlists: [ID!]!
+}
+
+""""""
+type ScheduleSuggestionsEditorialSection implements EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+
+  """"""
+  description: String
+}
+
+""""""
+input ScheduleUpdateInput {
+  """"""
+  schedule: ID!
+}
+
+""""""
+type ScheduleUpdatePayload {
+  """"""
+  schedule: Schedule!
+}
+
+""""""
+type SearchEditorialSection implements EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+}
+
+""""""
+input SearchFilter {
+  """"""
+  eq: String
+
+  """"""
+  notEq: String
+}
+
+""""""
+type SearchPage implements EditorialPage {
+  """"""
+  id: ID!
+
+  """"""
+  sections(first: Int = null, last: Int = null, after: String = null, before: String = null): EditorialSectionConnection!
+
+  """"""
+  query: String
+
+  """"""
+  tabs: [EditorialLink!]!
+}
+
+""""""
+union SearchResult = Album | Artist | BrowseCategory | Playlist | Track
+
+""""""
+type SearchResultConnection {
+  """"""
+  edges: [SearchResultEdge!]!
+
+  """"""
+  pageInfo: PageInfo!
+}
+
+""""""
+type SearchResultEdge {
+  """"""
+  node: SearchResult
+
+  """"""
+  cursor: String!
+}
+
+enum SearchType {
+  """"""
+  album
+
+  """"""
+  artist
+
+  """"""
+  category
+
+  """"""
+  playlist
+
+  """"""
+  soundtrack @deprecated(reason: "Use playlist instead")
+
+  """"""
+  track
+}
+
+""""""
+type SeedComposer {
+  """"""
+  id: ID!
+
+  """"""
+  kind: String!
+
+  """The permissions associated with this composer."""
+  permissions: [SeedComposerPermission!]
+}
+
+enum SeedComposerPermission {
+  """"""
+  WRITE
+}
+
+""""""
+input SetPlayFromInput {
+  """"""
+  soundZone: ID!
+
+  """
+  ID of the source you want the sound zone to play, e.g a playlist or a schedule.
+  """
+  source: ID!
+
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+}
+
+""""""
+type SetPlayFromPayload {
+  """"""
+  playFrom: PlaybackSource
+
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+}
+
+""""""
+input SetVolumeInput {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: ID!
+
+  """"""
+  volume: Volume!
+}
+
+""""""
+type SetVolumePayload {
+  """"""
+  clientMutationId: String
+
+  """"""
+  status: String
+
+  """"""
+  soundZone: ID!
+
+  """"""
+  volume: Volume!
+}
+
+""""""
+type SimilarPlaylistConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [PlaylistEdge!]!
+}
+
+"""
+Used for playlists created from a recipe, a number of attributes describing
+the music that the playlist will be automatically filled with.
+"""
+type SimpleRecipeComposer {
+  """"""
+  energies: [String!]!
+
+  """"""
+  genres: [String!]!
+
+  """"""
+  originYears: [String!]!
+
+  """"""
+  sounds: [String!]!
+
+  """"""
+  vocals: [String!]!
+
+  """"""
+  allowExplicit: Boolean!
+
+  """The permissions associated with this composer."""
+  permissions: [SimpleRecipeComposerPermission!]
+}
+
+enum SimpleRecipeComposerPermission {
+  """"""
+  WRITE
+}
+
+""""""
+input SkipTrackInput {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: ID!
+}
+
+""""""
+type SkipTrackPayload {
+  """"""
+  clientMutationId: String
+
+  """"""
+  status: String
+
+  """"""
+  soundZone: ID!
+}
+
+""""""
+input SkipTracksInput {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: ID!
+
+  """"""
+  tracksToSkip: Int
+
+  """"""
+  crossfade: Boolean
+}
+
+"""
+A sequence of collections (stations or playlists) that should be played for a specific period of time.
+"""
+type Slot {
+  """"""
+  id: ID!
+
+  """How slot is repeated in format: `FREQ=WEEKLY;BYDAY=XY`."""
+  rrule: String!
+
+  """The start time for slot in format: `HHMMss`."""
+  start: String!
+
+  """The duration of slot in milliseconds."""
+  duration: Int!
+
+  """When the slot was last updated."""
+  updatedAt: Date!
+
+  """"""
+  collections: [ID!]! @deprecated(reason: "Replaced by `playlistIds`.")
+
+  """Ids of playlists scheduled for the slot."""
+  playlistIds: [ID!]!
+}
+
+""""""
+input SlotInput {
+  """How slot is repeated in format: `FREQ=WEEKLY;BYDAY=XY`."""
+  rrule: String!
+
+  """The start time for slot in format: `HHMMss`."""
+  start: String!
+
+  """The duration of slot in milliseconds."""
+  duration: Int!
+
+  """Ids of playlists scheduled for the slot."""
+  playlistIds: [ID!]!
+}
+
+""""""
+type SmartShuffle {
+  """
+  Fake field because GraphQL does not support empty objects. Do not query, use __typename instead.
+  """
+  _: Boolean
+}
+
+""""""
+input SmartShuffleContext {
+  """"""
+  type: SmartShuffleContextType!
+
+  """"""
+  uris: [String!]!
+}
+
+enum SmartShuffleContextType {
+  """"""
+  tracks
+
+  """"""
+  playlist
+
+  """"""
+  album
+
+  """"""
+  artist
+
+  """"""
+  tags
+}
+
+""""""
+input SmartShuffleFeedback {
+  """"""
+  context: SmartShuffleContext!
+
+  """"""
+  feedback: SmartShuffleTrackFeedback!
+}
+
+""""""
+input SmartShuffleTrackFeedback {
+  """"""
+  uri: String!
+
+  """"""
+  isGood: Boolean
+
+  """"""
+  comment: String
+}
+
+"""The actual space where music is playing"""
+type SoundZone implements Node {
+  """"""
+  id: ID!
+
+  """Name of the sound zone."""
+  name: String!
+
+  """The account the sound zone belongs to."""
+  account: Account
+
+  """The location the sound zone belongs to."""
+  location: Location
+
+  """The type of streaming audio available to the zone."""
+  streamingType: StreamingType!
+
+  """
+  If set, this is the streamingType that the zone will get on next recur.
+  """
+  upcomingStreamingType: StreamingType
+
+  """The device the sound zone is connected to if it has one."""
+  device: Device
+
+  """The platform for the connected device."""
+  devicePlatform: String!
+
+  """Settings specific for this sound zone."""
+  settings: SoundZoneSettings!
+
+  """Subscription info for this sound zone."""
+  subscription: SoundZoneSubscription!
+
+  """If the sound zone is online."""
+  online: Boolean!
+
+  """Short id used for display urls."""
+  shortId: String!
+
+  """Url to the now playing screen for this sound zone."""
+  nowPlayingDisplayUrl: String!
+
+  """Code for the remote, used to control this sound zone."""
+  remoteCode: String!
+
+  """Shows if the sound zone has a device connected."""
+  isPaired: Boolean!
+
+  """Information about what the sound zone is currently playing."""
+  playFrom: PlaybackSource
+
+  """Information about the sound zone's playback state."""
+  playback: Playback
+
+  """Information about the sound zone's errors."""
+  errors(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """Filter on the error state, e.g resolved."""
+    state: ErrorState
+  ): SoundZoneErrorConnection
+
+  """
+  Information about which permissions current viewer has on the sound zone.
+  """
+  permissions: [SoundZonePermission!] @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """URL used for streaming playback. Requires stream add-on"""
+  streamUrl: String @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+
+  """Information about the sound zone's status, e.g is it paid."""
+  status: SoundZoneStatus!
+
+  """Which entitlements the sound zone has enabled."""
+  entitlements: [SoundZoneEntitlement!]
+
+  """The currently playing track (if any)."""
+  nowPlaying: NowPlaying
+
+  """
+  Playback history for this zone. Paginate the latest 30 days worth of events. `before` and `after` cursors accepts dates formatted using `RFC3339` to select a pre-determine intervals
+  """
+  playbackHistory(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+  ): HistoryTrackConnection
+
+  """Blocked tracks for the sound zone."""
+  blockedTracks(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+  ): BlockedTrackConnection
+
+  """Schedule for the sound zone."""
+  schedule: Schedule
+
+  """activity log for zone."""
+  activityLog(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+  ): ActivityLogConnection
+}
+
+""""""
+input SoundZoneAssignSourceInput {
+  """The sound zones you want to assign source to."""
+  soundZones: [ID!]!
+
+  """The actual entity you want to play, e.g a playlist."""
+  source: ID!
+
+  """The version of the entity you want to play if you want to specify it."""
+  sourceSnapshot: String
+
+  """
+  The specific track index you want to play in a source, if you want to specify one.
+  """
+  sourceTrackIndex: Int
+
+  """
+  The specific track you want to play in a source, if you want to specify one.
+  """
+  track: ID
+
+  """
+  Indicates if you want to start playing immediately or wait for the current song to end.
+  """
+  immediate: Boolean
+}
+
+""""""
+type SoundZoneAssignSourcePayload {
+  """"""
+  soundZones: [ID!]!
+
+  """"""
+  source: Assignable!
+}
+
+""""""
+input SoundZoneCancelUpcomingStreamingTypeChangeInput {
+  """The sound zone ID to cancel the upcoming streaming type change for."""
+  soundZoneId: ID!
+}
+
+""""""
+type SoundZoneCancelUpcomingStreamingTypeChangePayload {
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+input SoundZoneClearQueuedTracksInput {
+  """The sound zone that should clear its queued tracks."""
+  soundZone: ID!
+}
+
+""""""
+type SoundZoneClearQueuedTracksPayload {
+  """"""
+  status: String
+}
+
+""""""
+input SoundZoneCreateInput {
+  """The location the created sound zone should belong to."""
+  location: ID!
+
+  """The name the created sound zone should get."""
+  name: String!
+}
+
+""""""
+type SoundZoneCreatePayload {
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+type SoundZoneCreated {
+  """"""
+  id: ID!
+
+  """"""
+  account: ID!
+
+  """"""
+  location: ID!
+
+  """"""
+  soundZone: SoundZone
+}
+
+""""""
+input SoundZoneDeleteInput {
+  """"""
+  id: ID!
+}
+
+""""""
+type SoundZoneDeletePayload {
+  """"""
+  id: ID!
+
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+type SoundZoneDeleted {
+  """"""
+  id: ID!
+
+  """"""
+  account: ID!
+
+  """"""
+  location: ID!
+}
+
+enum SoundZoneEntitlement {
+  """"""
+  HIFI
+
+  """"""
+  INTERACTIVE
+
+  """"""
+  OFFLINE_PLAYBACK
+
+  """"""
+  ROYALTY_LICENSES
+}
+
+""""""
+type SoundZoneErrorConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [SoundZoneErrorEdge!]!
+}
+
+""""""
+type SoundZoneErrorEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The SoundZoneError node for this edge"""
+  node: Error!
+}
+
+""""""
+input SoundZoneEventForParentInput {
+  """"""
+  account: ID
+
+  """"""
+  location: ID
+}
+
+""""""
+type SoundZoneEventForParentPayload {
+  """"""
+  event: SoundZoneParentEvent!
+}
+
+enum SoundZoneField {
+  """"""
+  NAME
+}
+
+"""Used to filter the sound zones under an account"""
+input SoundZoneFilter {
+  """"""
+  devicePlatform: SearchFilter
+
+  """"""
+  query: SearchFilter
+
+  """"""
+  subscription: SubscriptionStateFilter
+
+  """"""
+  isPaired: Boolean
+
+  """"""
+  hasErrors: Boolean
+
+  """"""
+  online: Boolean
+
+  """"""
+  status: StatusStateFilter
+
+  """"""
+  statusCode: StatusCodeFilter
+
+  """"""
+  country: IsoCountryFilter
+}
+
+""""""
+input SoundZoneGenerateRemoteCodeInput {
+  """"""
+  id: ID!
+}
+
+""""""
+type SoundZoneGenerateRemoteCodePayload {
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+input SoundZoneInitiatePairingInput {
+  """"""
+  soundZone: ID!
+
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+}
+
+""""""
+type SoundZoneInitiatePairingPayload {
+  """"""
+  device: Device!
+
+  """"""
+  soundZone: SoundZone!
+
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+}
+
+""""""
+input SoundZonePairDeviceInput {
+  """"""
+  pairingCode: String!
+
+  """"""
+  soundZone: String!
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+type SoundZonePairDevicePayload {
+  """"""
+  device: Device!
+
+  """"""
+  clientMutationId: String
+}
+
+""""""
+union SoundZoneParentEvent = SoundZoneCreated | SoundZoneDeleted
+
+enum SoundZonePermission {
+  """"""
+  BLOCKED_TRACK_READ
+
+  """"""
+  BLOCKED_TRACK_WRITE
+
+  """"""
+  ENTERPRISE_REMOTE_SETTING_READ
+
+  """"""
+  ENTERPRISE_REMOTE_SETTING_WRITE
+
+  """"""
+  MESSAGE_ASSIGN
+
+  """"""
+  PAIR
+
+  """"""
+  PLAYBACK_MODE_WRITE
+
+  """"""
+  PLAYBACK_NEXT
+
+  """"""
+  PLAYBACK_PREVIOUS
+
+  """"""
+  PLAYBACK_QUEUE_READ
+
+  """"""
+  PLAYBACK_QUEUE_WRITE
+
+  """"""
+  PLAYBACK_SEEK
+
+  """"""
+  PLAYBACK_TOGGLE
+
+  """"""
+  PLAYBACK_VOLUME_WRITE
+
+  """"""
+  PLAYLIST_ASSIGN
+
+  """"""
+  READ
+
+  """"""
+  SCHEDULE_ASSIGN
+
+  """"""
+  SETTINGS_WRITE
+
+  """"""
+  SUBSCRIPTION_ACTIVATE
+
+  """"""
+  SUBSCRIPTION_CREATE
+
+  """"""
+  SUBSCRIPTION_DEACTIVATE
+
+  """"""
+  SUBSCRIPTION_READ
+
+  """"""
+  SUBSCRIPTION_WRITE
+
+  """"""
+  TRACK_ASSIGN
+
+  """"""
+  TRACK_UPCOMING_READ
+
+  """"""
+  UNPAIR
+
+  """"""
+  WRITE
+}
+
+""""""
+type SoundZonePublic {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  nowPlaying: NowPlaying
+
+  """"""
+  account: AccountPublic
+
+  """"""
+  location: LocationPublic
+}
+
+""""""
+type SoundZonePublicConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [SoundZonePublicEdge!]!
+}
+
+""""""
+type SoundZonePublicEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The SoundZone node for this edge"""
+  node: SoundZonePublic
+}
+
+""""""
+input SoundZoneQueueTracksInput {
+  """The sound zone to queue tracks at."""
+  soundZone: ID!
+
+  """Which tracks to queue."""
+  tracks: [ID!]!
+
+  """
+  Indicates if you want to start playing immediately or wait for the current song to end.
+  """
+  immediate: Boolean
+
+  """Should the player clear all currently queued tracks."""
+  clearQueuedTracks: Boolean
+}
+
+""""""
+type SoundZoneQueueTracksPayload {
+  """"""
+  status: String
+}
+
+""""""
+input SoundZoneSetPlaybackOrderInput {
+  """"""
+  soundZone: ID!
+
+  """How should the playing context be played, linearly or shuffled."""
+  playbackOrder: PlaybackOrder!
+}
+
+""""""
+type SoundZoneSetPlaybackOrderPayload {
+  """"""
+  status: String
+
+  """"""
+  playbackOrder: PlaybackOrder
+
+  """"""
+  availablePlaybackOrders: [PlaybackOrder!]!
+}
+
+""""""
+type SoundZoneSettings {
+  """Maximum bandwidth that the player can use to offline music."""
+  bandwidthLimitationKBPS: Int
+
+  """Maximum bitrate that the player can use."""
+  bitrate: BitRate
+
+  """If the player should crossfade between songs."""
+  crossfade: Boolean
+
+  """How long the crossfade between songs should be."""
+  crossfadeLength: Crossfade
+
+  """If the player should crossfade when manually skipping songs."""
+  crossfadeOnSkip: Boolean
+
+  """
+  What the default volume for devices connected to the sound zone should be.
+  """
+  defaultVolume: Volume
+
+  """How much music measured in mb that the player can store."""
+  diskcacheMaxMb: Int
+
+  """Should the player play in mono mode or not."""
+  mono: Boolean
+
+  """
+  Should it be possible to remote control a player connected to this sound zone.
+  """
+  staffControl: Boolean
+
+  """Enable or disable volume normalization."""
+  volumeEq: Boolean
+
+  """Enable or disable volume control."""
+  volumeControl: Boolean
+
+  """The default play from to use if no current is set."""
+  playFrom: ID
+
+  """
+  If enabled the player downloads as much as possible ahead of playback time.
+  """
+  prefetchPlayFrom: Boolean
+}
+
+""""""
+input SoundZoneSettingsInput {
+  """Maximum bandwidth that the player can use to offline music."""
+  bandwidthLimitationKBPS: Int
+
+  """Maximum bitrate that the player can use."""
+  bitrate: BitRate
+
+  """If the player should crossfade between songs."""
+  crossfade: Boolean
+
+  """How long the crossfade between songs should be."""
+  crossfadeLength: Crossfade
+
+  """If the player should crossfade when manually skipping songs."""
+  crossfadeOnSkip: Boolean
+
+  """
+  What the default volume for devices connected to the sound zone should be.
+  """
+  defaultVolume: Volume
+
+  """How much music measured in mb that the player can store."""
+  diskcacheMaxMb: Int
+
+  """Should the player play in mono mode or not."""
+  mono: Boolean
+
+  """
+  Should it be possible to remote control a player connected to this sound zone.
+  """
+  staffControl: Boolean
+
+  """Enable or disable volume normalization."""
+  volumeEq: Boolean
+
+  """Enable or disable volume control."""
+  volumeControl: Boolean
+
+  """The default play from to use if no current is set."""
+  playFrom: ID
+
+  """
+  If enabled the player downloads as much as possible ahead of playback time.
+  """
+  prefetchPlayFrom: Boolean
+}
+
+"""A descriptive status for the sound zone, e.g is it paid and paired."""
+type SoundZoneStatus {
+  """"""
+  state: SoundZoneStatusState!
+
+  """"""
+  code: SoundZoneStatusCode!
+}
+
+enum SoundZoneStatusCode {
+  """"""
+  ALL_OK
+
+  """"""
+  INACTIVE
+
+  """"""
+  NOT_PAIRED
+
+  """"""
+  NOT_SETUP
+
+  """"""
+  PAIRED
+
+  """"""
+  PLAYER_DEPRECATED
+
+  """"""
+  PLAYER_DISCONNECTED
+
+  """"""
+  PLAYER_MUTED
+
+  """"""
+  SUBSCRIPTION_EXPIRED
+
+  """"""
+  SUBSCRIPTION_INACTIVE
+
+  """"""
+  UNPAIRED
+}
+
+enum SoundZoneStatusState {
+  """"""
+  ERROR
+
+  """"""
+  INCOMPLETE
+
+  """"""
+  NOT_SETUP
+
+  """"""
+  OK
+
+  """"""
+  UNKNOWN
+}
+
+""""""
+input SoundZoneSubmitCancellationReasonInput {
+  """The sound zone ID to submit the cancellation reason for."""
+  soundZoneId: ID!
+
+  """The name of the cancellation reason."""
+  name: CancellationReasonName!
+
+  """The text description of the cancellation reason."""
+  text: String!
+
+  """The detailed text description of the cancellation reason."""
+  detailedText: String!
+
+  """The feedback for the cancellation reason."""
+  feedback: String!
+}
+
+""""""
+type SoundZoneSubmitCancellationReasonPayload {
+  """"""
+  cancellationReason: CancellationReason!
+}
+
+""""""
+type SoundZoneSubscription {
+  """Shows if the sound zone has an active subscription."""
+  isActive: Boolean!
+
+  """How long the sound zone has an active subscription."""
+  activeUntil: Date!
+
+  """The current state of the sound zones subscription."""
+  state: SubscriptionState!
+
+  """If set, the subscription is paused until this date."""
+  reactivateAt: Date
+}
+
+""""""
+input SoundZoneUnpairInput {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: ID!
+}
+
+""""""
+type SoundZoneUnpairPayload {
+  """"""
+  clientMutationId: String
+
+  """"""
+  soundZone: SoundZone
+}
+
+""""""
+input SoundZoneUpdateInput {
+  """"""
+  soundZone: ID!
+}
+
+""""""
+input SoundZoneUpdateMutationInput {
+  """"""
+  id: ID!
+
+  """The name you want to change to."""
+  name: String
+
+  """The sound zone specific settings you want to change."""
+  settings: SoundZoneSettingsInput
+
+  """
+  The preferred streaming type for this sound zone. Can only be changed when the zone is inactive, for active zones the cart api must be used.
+  """
+  streamingType: StreamingType
+}
+
+""""""
+type SoundZoneUpdateMutationPayload {
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+type SoundZoneUpdatePayload {
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+input SoundZoneUpdateSettingsInput {
+  """The sound zones you want to change settings on."""
+  soundZones: [ID!]!
+
+  """The sound zone specific settings you want to change."""
+  settings: SoundZoneSettingsInput!
+}
+
+""""""
+type SoundZoneUpdateSettingsPayload {
+  """"""
+  soundZones: [ID!]!
+
+  """"""
+  settings: SoundZoneSettings!
+}
+
+"""
+A soundtrack is a week-long, curated collection of music hand-picked for commercial use
+"""
+type Soundtrack implements Displayable & Assignable {
+  """"""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """"""
+  inMusicLibrary(library: ID!): Boolean
+
+  """"""
+  snapshot: String!
+
+  """"""
+  name: String!
+
+  """"""
+  shortDescription: String!
+
+  """How the soundtrack should be played back by default."""
+  presets: Presets!
+
+  """The curator of the playlist."""
+  curator: Curator
+
+  """"""
+  presentation(product: Product = soundtrack): Presentation @deprecated(reason: "Replaced by `display`.")
+
+  """"""
+  trackStatistics(market: IsoCountry!): TrackStatistics
+}
+
+""""""
+input SplicePlaylistInput {
+  """Playlist ID."""
+  id: ID!
+
+  """
+  The snapshot is an opaque version of the playlist that will change on every update. Include on mutations to avoid overwriting unseen changes.
+  """
+  snapshot: String
+
+  """
+  Zero-based index at which to start changing the list. Negative index counts back from the end of the list.
+  """
+  start: Int!
+
+  """
+  An integer indicating the number of tracks in the list to remove from `start`.
+  """
+  length: Int!
+
+  """
+  The tracks to add to the list, beginning from `start`. If you do not specify any `trackIds`, this will only remove tracks from the list.
+  """
+  trackIds: [ID!]!
+}
+
+"""Used for playlists created from and synced with a Spotify playlist."""
+type SpotifyComposer {
+  """"""
+  id: ID!
+
+  """"""
+  name: String!
+
+  """"""
+  syncedAt: Date!
+
+  """
+  A link to open the playlist in Spotify, e.g. https://open.spotify.com/playlist/<id>
+  """
+  externalUrl: String!
+
+  """The permissions associated with this composer."""
+  permissions: [SpotifyComposerPermission!]
+}
+
+enum SpotifyComposerPermission {
+  """"""
+  WRITE
+}
+
+""""""
+type SpotifyConnection {
+  """"""
+  id: String!
+
+  """"""
+  accessToken: String!
+
+  """"""
+  tokenType: String!
+
+  """"""
+  scope: String!
+
+  """"""
+  expiresIn: Int!
+}
+
+""""""
+type SpotifyMappedTrack {
+  """"""
+  sourceUri: String!
+
+  """"""
+  track: Track
+}
+
+""""""
+type SpotifyPlaylistImportError {
+  """"""
+  errorCode: String!
+
+  """"""
+  errorMessage: String!
+}
+
+""""""
+type SpotifyPlaylistImportResult {
+  """"""
+  sourceUri: String!
+
+  """"""
+  playlist: Playlist
+
+  """"""
+  playlistSourceTotal: Int
+
+  """"""
+  tracksImported: Int
+
+  """"""
+  tracksUnavailable: Int
+
+  """"""
+  tracksUnmapped: Int
+
+  """"""
+  errors: [SpotifyPlaylistImportError!]!
+}
+
+enum SpotifyPlaylistRefreshFrequency {
+  """"""
+  SIX_HOURS
+}
+
+""""""
+input SpotifyPlaylistRefreshFrequencyInput {
+  """"""
+  playlistId: String!
+
+  """"""
+  refreshFrequency: SpotifyPlaylistRefreshFrequency!
+
+  """Market to use to optimize licensing mapping"""
+  market: IsoCountry!
+}
+
+""""""
+type SpotifyPlaylistRefreshFrequencyResult {
+  """"""
+  playlist: Playlist
+}
+
+""""""
+type SpotifyPlaylistRefreshSettings {
+  """"""
+  refreshFrequency: SpotifyPlaylistRefreshFrequency!
+
+  """"""
+  market: IsoCountry!
+}
+
+""""""
+type SpotifyTrackMappings {
+  """"""
+  spotifyPlaylistUri: String!
+
+  """"""
+  playlistSourceTotal: Int
+
+  """"""
+  tracksImported: Int
+
+  """"""
+  tracksUnavailable: Int
+
+  """"""
+  tracksUnmapped: Int
+
+  """"""
+  errors: [SpotifyPlaylistImportError!]!
+
+  """"""
+  mappedTracks: [SpotifyMappedTrack!]!
+}
+
+""""""
+type StaffRemote {
+  """"""
+  id: ID!
+
+  """"""
+  soundZone: SoundZone
+
+  """Music Library of this remote."""
+  musicLibrary: MusicLibrary
+}
+
+""""""
+input StatusCodeFilter {
+  """"""
+  eq: SoundZoneStatusCode
+
+  """"""
+  notEq: SoundZoneStatusCode
+}
+
+""""""
+input StatusStateFilter {
+  """"""
+  eq: SoundZoneStatusState
+
+  """"""
+  notEq: SoundZoneStatusState
+}
+
+"""Streaming price information"""
+type StreamingPrice {
+  """List of available streaming prices"""
+  priceList: [StreamingPriceList!]!
+}
+
+""""""
+type StreamingPriceList {
+  """"""
+  billingCycle: BillingCycle!
+
+  """"""
+  plan: String!
+
+  """"""
+  trialDays: Int!
+
+  """"""
+  trialLength: TrialLength!
+
+  """"""
+  prices: [Float!]!
+
+  """"""
+  isoCurrency: String!
+
+  """"""
+  tier: String!
+
+  """"""
+  streamingType: StreamingType!
+
+  """"""
+  recurring: RecurringStreamingCost
+
+  """"""
+  appliedDiscount: AppliedDiscount
+}
+
+enum StreamingType {
+  """"""
+  ROYALTY_FREE
+
+  """"""
+  TIER_1
+
+  """"""
+  TIER_3
+}
+
+enum StreamingTypeChangeKind {
+  """"""
+  IMMEDIATE_CHANGE
+
+  """"""
+  NO_CHANGE
+
+  """"""
+  PENDING_CHANGE
+}
+
+""""""
+type Subscription {
+  """"""
+  accountUpdate(input: AccountUpdateSubscriptionInput!): AccountUpdateSubscriptionPayload
+
+  """"""
+  locationUpdate(input: LocationUpdateSubscriptionInput!): LocationUpdateSubscriptionPayload
+
+  """"""
+  locationEventForParent(input: LocationEventForParentInput!): LocationEventForParentPayload
+
+  """"""
+  deviceUpdate(input: DeviceUpdateInput!): DeviceUpdatePayload
+
+  """"""
+  soundZoneUpdate(input: SoundZoneUpdateInput!): SoundZoneUpdatePayload
+
+  """"""
+  soundZoneEventForParent(input: SoundZoneEventForParentInput!): SoundZoneEventForParentPayload
+
+  """"""
+  userUpdate(input: UserUpdateSubscriptionInput!): UserUpdateSubscriptionPayload
+
+  """"""
+  nowPlayingUpdate(input: NowPlayingUpdateInput!): NowPlayingUpdatePayload
+
+  """"""
+  playbackUpdate(input: PlaybackUpdateInput!): PlaybackUpdatePayload
+
+  """Subscribe to changes to a playlist."""
+  playlistUpdate(input: PlaylistUpdateInput!): PlaylistUpdatePayload
+
+  """Subscribe to changes to a schedule."""
+  scheduleUpdate(input: ScheduleUpdateInput!): ScheduleUpdatePayload
+
+  """Subscribe to changes in a music library using the owner ID."""
+  libraryUpdate(input: LibraryUpdateSubscriptionInput!): LibraryUpdatePayload
+}
+
+""""""
+input SubscriptionActivateInput {
+  """"""
+  soundZoneId: ID!
+}
+
+""""""
+type SubscriptionActivatePayload {
+  """"""
+  account: Account!
+
+  """"""
+  soundZone: SoundZone!
+}
+
+""""""
+input SubscriptionCancelInput {
+  """"""
+  soundZoneId: ID!
+
+  """"""
+  reactivateAt: Instant
+}
+
+""""""
+type SubscriptionCancelPayload {
+  """"""
+  account: Account!
+
+  """"""
+  soundZone: SoundZone!
+}
+
+"""Subscription item"""
+interface SubscriptionItem {
+  """Discount applied either through voucher or price entry."""
+  activatedDiscount: ActivatedDiscount
+
+  """"""
+  billingGroup: ID!
+
+  """Currency for the monthly price"""
+  currency: Currency!
+
+  """
+  If true, this item is deactivated and will disappear at the end of the current period.
+  """
+  deactivated: Boolean!
+
+  """"""
+  id: ID!
+
+  """Monthly price"""
+  price: Float!
+
+  """"""
+  priceHidden: Boolean!
+
+  """"""
+  product: BillingProduct
+
+  """"""
+  trialUntil: Instant!
+}
+
+enum SubscriptionItemField {
+  """"""
+  CREATED_AT
+}
+
+""""""
+type SubscriptionItemNonStreaming implements SubscriptionItem {
+  """"""
+  id: ID!
+
+  """"""
+  product: BillingProduct
+
+  """The source of the quantity, if not manually set"""
+  quantitySource: String!
+
+  """Current quantity"""
+  quantity: Int!
+
+  """Currency for the monthly price"""
+  currency: Currency!
+
+  """Monthly price"""
+  price: Float!
+
+  """True if add-on"""
+  addOn: Boolean!
+
+  """"""
+  billingGroup: ID!
+
+  """Discount applied either through voucher or price entry."""
+  activatedDiscount: ActivatedDiscount
+
+  """
+  If true, this item is deactivated and will disappear at the end of the current period.
+  """
+  deactivated: Boolean!
+
+  """
+  If true, the price cannot be determined as it is set externally. The price will be returned as 0 but shouldn't be shown as the actual price will most likely be something else.
+  """
+  priceHidden: Boolean!
+
+  """"""
+  trialUntil: Instant!
+}
+
+""""""
+type SubscriptionItemStreaming implements SubscriptionItem {
+  """"""
+  id: ID!
+
+  """"""
+  product: BillingProduct
+
+  """Currency for the monthly price"""
+  currency: Currency!
+
+  """Monthly price"""
+  price: Float!
+
+  """Sound Zone"""
+  soundZone: SoundZone!
+
+  """"""
+  streamingType: String!
+
+  """"""
+  billingGroup: ID!
+
+  """Discount applied either through voucher or price entry."""
+  activatedDiscount: ActivatedDiscount
+
+  """
+  If true, this item is deactivated and will disappear at the end of the current period.
+  """
+  deactivated: Boolean!
+
+  """"""
+  priceHidden: Boolean!
+
+  """"""
+  trialUntil: Instant!
+}
+
+enum SubscriptionState {
+  """"""
+  ACTIVE
+
+  """"""
+  CANCELLED
+
+  """"""
+  EXPIRED
+
+  """"""
+  INACTIVE
+
+  """"""
+  PAUSED
+}
+
+""""""
+input SubscriptionStateFilter {
+  """"""
+  eq: SubscriptionState
+
+  """"""
+  notEq: SubscriptionState
+}
+
+type Subscriptions {
+  accountUpdate(input: AccountUpdateSubscriptionInput!): AccountUpdateSubscriptionPayload
+  locationUpdate(input: LocationUpdateSubscriptionInput!): LocationUpdateSubscriptionPayload
+  locationEventForParent(input: LocationEventForParentInput!): LocationEventForParentPayload
+  soundZoneUpdate(input: SoundZoneUpdateInput!): SoundZoneUpdatePayload
+  deviceUpdate(input: DeviceUpdateInput!): DeviceUpdatePayload
+  soundZoneEventForParent(input: SoundZoneEventForParentInput!): SoundZoneEventForParentPayload
+  nowPlayingUpdate(input: NowPlayingUpdateInput!): NowPlayingUpdatePayload
+  playbackUpdate(input: PlaybackUpdateInput!): PlaybackUpdatePayload
+  musicLibraryUpdate(input: MusicLibraryUpdateInput!): MusicLibraryUpdatePayload
+  playlistUpdate(input: PlaylistUpdateInput!): PlaylistUpdatePayload
+  scheduleUpdate(input: ScheduleUpdateInput!): ScheduleUpdatePayload
+  userUpdate(input: UserUpdateSubscriptionInput!): UserUpdateSubscriptionPayload
+  libraryUpdate(input: LibraryUpdateSubscriptionInput!): LibraryUpdateSubscriptionPayload
+}
+
+""""""
+input SyncSpotifySyncedPlaylistInput {
+  """Playlist ID."""
+  id: ID!
+}
+
+""""""
+input TagLibraryItemsInput {
+  """"""
+  version: String = null
+
+  """"""
+  itemTags: [LibraryItemTagInput!]!
+}
+
+""""""
+input TaxExemptFormUpsertInput {
+  """"""
+  companyName: String!
+
+  """"""
+  companyType: String!
+
+  """"""
+  businessDescription: String!
+
+  """"""
+  contactName: String!
+
+  """"""
+  contactPhone: String!
+
+  """"""
+  contactEmail: String!
+
+  """"""
+  address: AddressCreateInput!
+}
+
+"""Required tax field information"""
+type TaxRequiredFields {
+  """"""
+  name: String!
+
+  """"""
+  available: Boolean!
+
+  """"""
+  required: Boolean!
+}
+
+enum TermsType {
+  """"""
+  ENTERPRISE
+
+  """"""
+  GENERAL
+}
+
+enum Theme {
+  """"""
+  LightTheme
+
+  """"""
+  DarkTheme
+}
+
+""""""
+type Thumbnails {
+  """"""
+  tiny: OldImage
+
+  """"""
+  smallSquare: OldImage
+
+  """"""
+  small: OldImage
+
+  """"""
+  mediumSquare: OldImage
+
+  """"""
+  medium: OldImage
+
+  """"""
+  large: OldImage
+
+  """"""
+  original: OldImage
+}
+
+"""A track."""
+type Track implements Displayable & Node {
+  """Display of the track."""
+  display: Display
+
+  """"""
+  id: ID!
+
+  """A globally unique ID to identify this recording."""
+  isrc: String
+
+  """Title of the track."""
+  title: String!
+
+  """"""
+  name: String! @deprecated(reason: "Replaced by `title`")
+
+  """The track's snapshot version."""
+  snapshot: String
+
+  """The version label for the recording. Examples: `radio edit`."""
+  version: String
+
+  """
+  A url for a 30 second preview of the track. Not available for all tracks.
+  """
+  previewUrl: String
+
+  """The track's duration in milliseconds."""
+  durationMs: Int
+
+  """"""
+  duration: Int @deprecated(reason: "Replaced by `durationMs`")
+
+  """
+  `true` if track contains explicit lyrics. `false` indicates no explicit lyrics, or unknown.
+  """
+  explicit: Boolean
+
+  """
+  Recognizability of this artist `[0,100]`. Where `100` is very recognizable and `0` is either not so recognizable or unknown status
+  """
+  recognizability: Int
+
+  """The markets where the track is licensed for playback."""
+  availableMarkets: [IsoCountry!]
+
+  """`true` if the track is licensed for playback in a particular market."""
+  isAvailable(market: IsoCountry!): Boolean!
+
+  """The album for this track if one exists."""
+  album: Album
+
+  """The artist(s) for this track if any exists."""
+  artists: [Artist!]
+
+  """"""
+  shareUrl: String @deprecated(reason: "Will be empty after 2024-05-15")
+
+  """Audio details about this track, only available to devices."""
+  audio(
+    """Audio format for which to get audio details. Examples: `OGG_VORBIS`."""
+    format: AudioFormat! = OGG_VORBIS
+
+    """Audio quality for which to get audio details. Examples: `NORMAL`."""
+    quality: AudioQuality! = NORMAL
+  ): Audio
+}
+
+""""""
+type TrackPage implements EditorialPage {
+  """"""
+  id: ID!
+
+  """"""
+  sections(first: Int = null, last: Int = null, after: String = null, before: String = null): EditorialSectionConnection!
+
+  """The track for this page"""
+  track: Track!
+
+  """The page title"""
+  title: String
+}
+
+""""""
+type TrackPageEditorialSection implements EditorialSection {
+  """"""
+  id: ID!
+
+  """"""
+  title: String!
+
+  """"""
+  component: [String!]!
+
+  """"""
+  items(first: Int = null, last: Int = null, after: String = null, before: String = null): DisplayableConnection!
+}
+
+""""""
+type TrackReference {
+  """"""
+  track: Track
+}
+
+enum TrackReportingAudioFormat {
+  """"""
+  aac
+
+  """"""
+  mp3
+
+  """"""
+  oggVorbis
+}
+
+enum TrackReportingAudioQuality {
+  """"""
+  extreme
+
+  """"""
+  high
+
+  """"""
+  low
+
+  """"""
+  normal
+}
+
+""""""
+input TrackReportingInput {
+  """"""
+  id: ID!
+
+  """"""
+  quality: TrackReportingAudioQuality!
+
+  """"""
+  format: TrackReportingAudioFormat!
+
+  """"""
+  source: TrackReportingSource!
+}
+
+enum TrackReportingSource {
+  """"""
+  cache
+
+  """"""
+  stream
+}
+
+"""Statistics calculated based on tracks."""
+type TrackStatistics {
+  """Number of tracks flagged with `explicit=true`."""
+  explicit: Int
+
+  """Number of tracks licensed for playback in the provided market."""
+  playable: Int
+
+  """
+  Duration in milliseconds for tracks licensed for playback in the provided market.
+  """
+  playableDuration: Int
+
+  """Number of tracks."""
+  total: Int
+
+  """Duration in milliseconds for all tracks."""
+  totalDuration: Int
+
+  """Duration in milliseconds for tracks flagged with `explicit=true`."""
+  explicitDuration: Int
+
+  """
+  Number of tracks flagged with `explicit=true` and licensed for playback in the provided market.
+  """
+  explicitPlayable: Int
+
+  """
+  Duration in milliseconds for tracks flagged with `explicit=true` and licensed for playback in the provided market.")
+  """
+  explicitPlayableDuration: Int
+}
+
+""""""
+type TracksConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [AlbumTracksEdge!]!
+}
+
+""""""
+type TracksEdge {
+  """The track node for this edge"""
+  node: Track!
+
+  """Pagination cursor for this edge"""
+  cursor: String!
+}
+
+enum TracksForArtistSort {
+  """The recognizability of the track's."""
+  recognizability
+}
+
+"""A connection to a list of tracks from a prompt."""
+type TracksFromPromptConnection {
+  """"""
+  pageInfo: PageInfo!
+
+  """"""
+  edges: [TracksFromPromptEdge!]!
+
+  """"""
+  total: Int!
+
+  """"""
+  totalDurationSeconds: Int!
+}
+
+"""An edge in a connection, part of TracksFromPromptConnection."""
+type TracksFromPromptEdge {
+  """"""
+  cursor: String!
+
+  """"""
+  node: Track
+}
+
+""""""
+type TrialLength {
+  """"""
+  withoutPaymentDetails: Int!
+
+  """"""
+  withPaymentDetails: Int!
+}
+
+""""""
+input UnblockTrackInput {
+  """id of the sound zone."""
+  parent: ID!
+
+  """id of the track to unblock."""
+  source: ID!
+}
+
+""""""
+type UnblockTrackPayload {
+  """id of the sound zone."""
+  parent: ID!
+
+  """id of the track that was unblocked."""
+  source: ID!
+}
+
+""""""
+input UntagLibraryItemsInput {
+  """"""
+  version: String = null
+
+  """"""
+  itemTags: [LibraryItemTagInput!]!
+}
+
+enum UpcomingPlan {
+  """"""
+  ESSENTIAL
+
+  """"""
+  NO_UPCOMING_PLAN
+
+  """"""
+  ROYALTY_FREE
+
+  """"""
+  SOUNDTRACK
+
+  """"""
+  STARTER
+
+  """"""
+  UNLIMITED
+}
+
+""""""
+input UpdateBillingCycleInput {
+  """The account to update the billing cycle for."""
+  accountId: ID!
+
+  """
+  The billing cycle to update to. Must be one of: monthly, quarterly, yearly.
+  """
+  billingCycle: BillingCycle!
+}
+
+""""""
+input UpdateCartInput {
+  """The cart to update."""
+  cartId: ID!
+
+  """The line items to update."""
+  lineItems: [CartLineItemUpdateInput!]!
+}
+
+""""""
+input UpdateManualPlaylistInfoInput {
+  """Playlist ID."""
+  id: ID!
+
+  """The name of the playlist."""
+  name: String
+
+  """A longer description of the playlist"""
+  description: String
+
+  """A short description of the playlist used where the UI space is tight"""
+  shortDescription: String
+
+  """How the playlist should be played back by default."""
+  playbackMode: PlaybackMode
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input UpdateScheduleInput {
+  """"""
+  id: ID!
+
+  """Name of the schedule."""
+  name: String
+
+  """A long description of the schedule. Not set for all schedules."""
+  description: String
+
+  """
+  A short description of the schedule used where the UI space is tight. Not set for all schedules.
+  """
+  shortDescription: String
+
+  """"""
+  color: String
+
+  """
+  How the schedule should be presented, as a weekly schedule or a daily schedule. Allowed values are `weekly` and `daily`, weekly is default.
+  """
+  presentAs: String
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  The time slots for the schedule. A time slot describes what music should play during what hours on a specific day of week.
+  """
+  slots: [SlotInput!]
+
+  """
+  List of key-value annotations that can be attributed with the schedule. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input UpdateSpotifySyncedPlaylistInput {
+  """Playlist ID."""
+  id: ID!
+
+  """The name of the playlist."""
+  name: String
+
+  """A longer description of the playlist"""
+  description: String
+
+  """A short description of the playlist used where the UI space is tight"""
+  shortDescription: String
+
+  """How the playlist should be played back by default."""
+  playbackMode: PlaybackMode
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input UpdateStationFromPlaylistInput {
+  """Playlist ID."""
+  id: ID!
+
+  """The name of the playlist."""
+  name: String
+
+  """A longer description of the playlist"""
+  description: String
+
+  """A short description of the playlist used where the UI space is tight"""
+  shortDescription: String
+
+  """
+  An image id of a image uploaded to images.upload.soundtrackyourbrand.com
+  """
+  imageId: String
+
+  """
+  List of key-value annotations that can be attributed with the playlist. Maximum of 10 can be provided in one request.
+  """
+  annotations: [MusicAnnotationInput!]
+}
+
+""""""
+input UpdateStationFromPromptInput {
+  """"""
+  id: String!
+
+  """"""
+  tracks: [String!]!
+
+  """"""
+  name: String!
+
+  """"""
+  prompt: String!
+}
+
+""""""
+type UpdateStationFromPromptResult {
+  """"""
+  playlist: Playlist!
+}
+
+""""""
+input UpdateStationFromTagsInput {
+  """"""
+  id: ID
+
+  """"""
+  name: String
+
+  """"""
+  filters: [MusicTagInputFilter!]
+}
+
+""""""
+type UpdateStationFromTagsPayload {
+  """"""
+  playlist: Playlist!
+}
+
+""""""
+scalar Url
+
+"""A user"""
+type User implements Node {
+  """"""
+  id: ID!
+
+  """"""
+  companyRole: String
+
+  """Name of the user."""
+  name: String!
+
+  """Email of the user."""
+  email: String!
+
+  """Accounts that the user has access to."""
+  accounts(
+    """The number of paginated nodes to fetch"""
+    first: Int
+
+    """The number of paginated nodes to fetch"""
+    last: Int
+
+    """The cursor before which to fetch the next set of paginated nodes"""
+    before: String
+
+    """The cursor after which to fetch the next set of paginated nodes"""
+    after: String
+
+    """"""
+    orderBy: UserAccountOrderInput! = {field: BUSINESS_NAME, direction: ASC}
+  ): UserAccountConnection
+
+  """What day is the first of the week for the user."""
+  startOfWeek: Weekday!
+
+  """When the user was created."""
+  createdAt: Date!
+
+  """Last time the user was updated."""
+  updatedAt: Date!
+
+  """Locale for the user."""
+  locale: String!
+
+  """User image"""
+  image: Image!
+
+  """Information about which permissions current viewer has on the user."""
+  permissions: [UserPermission!] @deprecated(reason: "EXPERIMENTAL: This feature can change at any time and is not meant to be used in any production environment.")
+}
+
+""""""
+input UserAcceptInvitationInput {
+  """The name of the user"""
+  name: String!
+
+  """The email of the the new user"""
+  email: String!
+
+  """The password for the user."""
+  password: String!
+
+  """The secret of the invitation to accept."""
+  secret: String!
+
+  """The start of week"""
+  startOfWeek: Weekday
+
+  """Locale"""
+  locale: String
+}
+
+""""""
+type UserAcceptInvitationResponse {
+  """"""
+  user: User!
+}
+
+""""""
+type UserAccountConnection {
+  """Pagination details for this connection"""
+  pageInfo: PageInfo!
+
+  """Edges for this connection"""
+  edges: [UserAccountEdge!]!
+
+  """Total number of Account for this connection"""
+  total: Int!
+}
+
+""""""
+type UserAccountEdge {
+  """Pagination cursor for this edge"""
+  cursor: String!
+
+  """The Account node for this edge"""
+  node: Account
+}
+
+""""""
+input UserAccountOrderInput {
+  """"""
+  field: AccountField!
+
+  """"""
+  direction: Ordering!
+}
+
+""""""
+type UserActor {
+  """"""
+  user: User!
+}
+
+""""""
+input UserChangeEmailMutationInput {
+  """"""
+  id: ID!
+
+  """The email address you want to change to."""
+  email: String!
+}
+
+""""""
+type UserChangeEmailMutationPayload {
+  """"""
+  status: String!
+}
+
+""""""
+input UserChangePasswordMutationInput {
+  """"""
+  id: ID!
+
+  """The current password."""
+  password: String!
+
+  """The new password."""
+  newPassword: String!
+
+  """The new password for confirmation."""
+  newPasswordConfirmation: String!
+}
+
+""""""
+type UserChangePasswordMutationPayload {
+  """"""
+  status: String!
+}
+
+enum UserPermission {
+  """"""
+  MANAGE_ROLES
+
+  """"""
+  READ
+
+  """"""
+  WRITE
+}
+
+""""""
+input UserSetCompanyRoleInput {
+  """"""
+  companyRole: String!
+}
+
+""""""
+type UserSetCompanyRoleResponse {
+  """"""
+  user: User!
+}
+
+""""""
+input UserUpdateLocationInvitationRolesInput {
+  """The id of the unconfirmed identity user."""
+  id: ID!
+
+  """The location id."""
+  location: ID!
+
+  """The roles to assign to the user."""
+  roles: [String!]!
+}
+
+""""""
+type UserUpdateLocationInvitationRolesPayload {
+  """"""
+  user: PendingUser
+
+  """The location."""
+  location: Location
+
+  """"""
+  roles: [String!]!
+}
+
+""""""
+input UserUpdateLocationRolesInput {
+  """The id of the user."""
+  id: ID!
+
+  """The location id."""
+  location: ID!
+
+  """
+  The roles to set for the user on this location. Replaces any existing roles.
+  """
+  roles: [String!]!
+}
+
+""""""
+type UserUpdateLocationRolesPayload {
+  """"""
+  user: User
+
+  """The location."""
+  location: Location
+
+  """"""
+  roles: [String!]!
+}
+
+""""""
+input UserUpdateMutationInput {
+  """"""
+  id: ID!
+
+  """The name you want to change to."""
+  name: String
+
+  """What day is the first of the week for the user."""
+  startOfWeek: Weekday
+
+  """The image id for the user."""
+  imageId: String
+}
+
+""""""
+type UserUpdateMutationPayload {
+  """"""
+  user: User!
+}
+
+""""""
+input UserUpdateSubscriptionInput {
+  """"""
+  user: ID!
+}
+
+""""""
+type UserUpdateSubscriptionPayload {
+  """"""
+  user: User!
+}
+
+""""""
+union Viewer = Device | PublicAPIClient | StaffRemote | User
+
+"""Volume can represent values between 0 and 16."""
+scalar Volume
+
+"""Voucher information"""
+type Voucher {
+  """"""
+  code: String!
+
+  """"""
+  label: String!
+
+  """"""
+  error: String
+}
+
+enum Weekday {
+  """"""
+  FRIDAY
+
+  """"""
+  MONDAY
+
+  """"""
+  SATURDAY
+
+  """"""
+  SUNDAY
+
+  """"""
+  THURSDAY
+
+  """"""
+  TUESDAY
+
+  """"""
+  WEDNESDAY
+}
+
+"""Zone that is associated with the schedule."""
+type ZoneScheduleComposer {
+  """"""
+  id: ID!
+}
