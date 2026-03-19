@@ -1,4 +1,4 @@
-import { graphql } from '../graphql'
+import { graphql } from '@/graphql'
 
 /**
  * A GraphQL fragment for the `Displayable` GraphQL interface.
