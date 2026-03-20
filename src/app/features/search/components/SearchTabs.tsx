@@ -22,8 +22,9 @@ export function SearchTabs({
         <Link to={uri2url(params2uri({ ...params, section: '' }))}>All</Link>
       </li>
       {tabs.map((tab) => {
+        const isActive = params.uri === tab.id
         return (
-          <li key={tab.id} className="tab">
+          <li key={tab.id} className={`tab${isActive ? '-active' : ''}`}>
             <Link to={uri2url(tab.id)}>{tab.display?.title}</Link>
           </li>
         )

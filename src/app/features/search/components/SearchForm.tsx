@@ -1,30 +1,35 @@
+import { type FormEvent } from 'react'
 import { params2uri, uri2url } from '@/lib/utils'
 import type { SearchRouteParams } from '../types'
 
 export function SearchForm({
   params,
+  inputValue,
+  onValueChange,
   onNavigate,
 }: {
-  params: SearchRouteParams
-  onNavigate: (to: string) => void
+  params: SearchRouteParams,
+  inputValue: string,
+  onValueChange: (query: string) => void,
+  onNavigate: (to: string) => void,
 }) {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    onNavigate(uri2url(params2uri({ ...params, query: params.query })))
+  }
+
+
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault()
-        const input = event.currentTarget.elements.namedItem('query') as HTMLInputElement
-        onNavigate(uri2url(params2uri({ ...params, query: input.value })))
-      }}
-    >
+    <form onSubmit={handleSubmit}>
       <input
         name="query"
         type="search"
         size={30}
-        defaultValue={params.query}
         placeholder="Search on Soundtrack"
+        value={inputValue}
+        onChange={(event) => onValueChange(event.target.value)}
       />
       <button type="submit" children="Search" />
     </form>
   )
 }
-
