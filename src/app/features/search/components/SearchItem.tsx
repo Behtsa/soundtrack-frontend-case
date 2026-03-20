@@ -1,20 +1,20 @@
 import { displayImageUrl } from '@/lib/utils'
-import { unionMerge } from '@/lib/type-helpers'
+import type { UnionMerge } from '@/lib/type-helpers'
 import type { SearchResult } from '../searchQueries'
 
-export function SearchItem({ node }: { node: SearchResult }) {
-  const merged = unionMerge(node)
+type SearchMergedResult = UnionMerge<SearchResult>
 
+export function SearchItem({ item }: { item: SearchMergedResult }) {
   return (
     <li className="item">
-      <img src={displayImageUrl(merged.display, 140)} alt="" />
+      <img src={displayImageUrl(item.display, 140)} alt="" />
       <h4>
         <a
-          href={`https://business.soundtrackyourbrand.com/search/${merged.id}`}
+          href={`https://business.soundtrackyourbrand.com/search/${item.id}`}
           target="_blank"
           rel="noreferrer"
         >
-          {merged.display?.title || merged.id}
+          {item.display?.title || item.id}
         </a>
       </h4>
     </li>

@@ -6,6 +6,7 @@ import { SearchForm } from './components/SearchForm'
 import { SearchTabs } from './components/SearchTabs'
 import { EditorialSections } from './components/EditorialSections'
 import { ErrorDisplay } from '@/components/ErrorDisplay'
+import './SearchPage.css'
 
 export function SearchPage(): React.ReactNode {
   const [location, navigate] = useLocation()

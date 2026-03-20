@@ -14,8 +14,8 @@ export function useEditorialSearch(params: EditorialSearchParams) {
 
   return {
     result,
-    tabs: result.data?.editorialSearch.tabs,
-    sections: result.data?.editorialSearch.sections.edges,
+    tabs: result.data?.editorialSearch?.tabs ?? null,
+    sections: result.data?.editorialSearch?.sections?.edges ?? null,
   }
 }
 

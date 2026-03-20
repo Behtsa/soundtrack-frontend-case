@@ -12,7 +12,7 @@ export function SearchTabs({
   tabs,
 }: {
   params: SearchRouteParams
-  tabs?: Tab[] | null
+  tabs: Tab[] | null
 }) {
   if (!tabs) return null
 

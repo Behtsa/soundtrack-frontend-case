@@ -15,7 +15,7 @@ type EditorialSectionEdge = {
 export function EditorialSections({
   sections,
 }: {
-  sections?: EditorialSectionEdge[] | null
+  sections: EditorialSectionEdge[] | null
 }) {
   if (!sections) return null
 
@@ -33,7 +33,7 @@ export function EditorialSections({
                 if (!item.node) return null
                 const merged = unionMerge(item.node)
                 return (
-                  <SearchItem key={merged.id || index} node={item.node} />
+                  <SearchItem key={merged.id || index} item={merged} />
                 )
               })}
             </ul>
