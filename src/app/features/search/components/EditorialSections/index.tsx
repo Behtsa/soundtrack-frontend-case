@@ -1,6 +1,7 @@
-import type { SearchResult } from '../searchQueries'
-import { SearchItem } from './SearchItem'
+import type { SearchResult } from '../../searchQueries'
+import { SearchItem } from '../SearchItem'
 import { unionMerge } from '@/lib/type-helpers'
+import styles from './EditorialSections.module.css'
 
 type EditorialSectionEdge = {
   node: {
@@ -28,7 +29,7 @@ export function EditorialSections({
         return (
           <section key={node.id}>
             <h2>{node.title}</h2>
-            <ul className="items-list">
+            <ul className={styles.itemsList}>
               {node.items.edges.map((item, index) => {
                 if (!item.node) return null
                 const merged = unionMerge(item.node)

@@ -1,6 +1,6 @@
 import { type FormEvent } from 'react'
 import { params2uri, uri2url } from '@/lib/utils'
-import type { SearchRouteParams } from '../types'
+import type { SearchRouteParams } from '../../types'
 
 export function SearchForm({
   params,
