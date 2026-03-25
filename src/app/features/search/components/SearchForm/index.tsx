@@ -1,6 +1,7 @@
 import { type FormEvent } from 'react'
 import { params2uri, uri2url } from '@/lib/utils'
-import type { SearchRouteParams } from '../types'
+import type { SearchRouteParams } from '../../types'
+import styles from './SearchForm.module.css'
 
 export function SearchForm({
   params,
@@ -20,16 +21,18 @@ export function SearchForm({
 
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={styles.searchBar}>
+      <span className={styles.searchIcon} aria-hidden="true">⌕</span>
       <input
+        autoComplete='off'
+        className={styles.input}
         name="query"
         type="search"
-        size={30}
         placeholder="Search on Soundtrack"
         value={inputValue}
         onChange={(event) => onValueChange(event.target.value)}
       />
-      <button type="submit" children="Search" />
+      <button className={styles.submitButton} type="submit">Search</button>
     </form>
   )
 }

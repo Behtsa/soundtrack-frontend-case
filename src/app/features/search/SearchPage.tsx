@@ -8,7 +8,7 @@ import { EditorialSections } from './components/EditorialSections'
 import { ErrorDisplay } from '@/components/ErrorDisplay'
 import { useDebounceValue } from '@/hooks/useDebounceValue'
 import { SEARCH_DEBOUNCE_TIME } from './searchConstants'
-import './SearchPage.css'
+import styles from './SearchPage.module.css'
 
 export function SearchPage(): ReactNode {
   const [location, navigate] = useLocation()
@@ -49,7 +49,7 @@ export function SearchPage(): ReactNode {
   }, [normalizedQuery])
 
   return (
-    <main>
+    <main className={styles.pageMain}>
       <SearchForm
         params={params}
         inputValue={searchText}
@@ -57,7 +57,7 @@ export function SearchPage(): ReactNode {
         onNavigate={navigate}
       />
 
-      <div className="results">
+      <div className={styles.results}>
         <ErrorDisplay error={result.error} title="GraphQL Error" />
 
         <SearchTabs params={params} tabs={tabs} />

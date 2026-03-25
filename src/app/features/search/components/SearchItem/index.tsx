@@ -1,12 +1,13 @@
 import { displayImageUrl } from '@/lib/utils'
 import type { UnionMerge } from '@/lib/type-helpers'
-import type { SearchResult } from '../searchQueries'
+import type { SearchResult } from '../../searchQueries'
+import styles from './SearchItem.module.css'
 
 type SearchMergedResult = UnionMerge<SearchResult>
 
 export function SearchItem({ item }: { item: SearchMergedResult }) {
   return (
-    <li className="item">
+    <li className={styles.item}>
       <img src={displayImageUrl(item.display, 140)} alt="" />
       <h4>
         <a

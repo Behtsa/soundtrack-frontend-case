@@ -1,0 +1,85 @@
+.itemsList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── Pattern B: auto-fill cards ──────────────────────────────────────────── */
+/* ImageCards, PortraitCards / Grid without breakpoint hints.                */
+/* Browser decides how many columns fit given the min item width.            */
+.autoGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+}
+
+/* ── Pattern A: fixed cols per breakpoint ────────────────────────────────── */
+/* PortraitCards / ListItems with from= hints.                               */
+/* --cols-base, --cols-m, --cols-l are injected as inline style by the       */
+/* component from the API hint values.                                        */
+.fixedGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(var(--cols-base, 2), minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .fixedGrid {
+    grid-template-columns: repeat(var(--cols-m, var(--cols-base, 3)), minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .fixedGrid {
+    grid-template-columns: repeat(var(--cols-l, var(--cols-m, 5)), minmax(0, 1fr));
+  }
+}
+
+/* ── List layout ─────────────────────────────────────────────────────────── */
+/* ListItems without breakpoint hints or as the small-screen fallback.       */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Track list ──────────────────────────────────────────────────────────── */
+/* TrackList hint: compact single-column list.                               */
+.trackList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* ── Pattern C: mixed layout (list at S/XS, cards at M+) ────────────────── */
+/* e.g. PortraitCards at from=l/m + ListItems at base (no from=).           */
+/* --cols-m, --cols-l come from the large-screen hint.                       */
+/* --rows-sm (if present) limits rows on small screens (inline style).       */
+.mixedLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .mixedLayout {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(var(--cols-m, 4), minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .mixedLayout {
+    grid-template-columns: repeat(var(--cols-l, 5), minmax(0, 1fr));
+  }
+}
+
+/* ── Row limit ───────────────────────────────────────────────────────────── */
+/* Added by the component only when the API provides a rows hint.            */
+/* --rows is the visible row count; items beyond that are clipped.           */
+.rowsLimited {
+  grid-template-rows: repeat(var(--rows), auto);
+  grid-auto-rows: 0;
+  overflow: hidden;
+}
