@@ -1,6 +1,6 @@
 import type { SearchResult } from '../../searchQueries'
 import { resolveSectionItemsLayout, type SectionItemsLayout } from '../../sectionLayout'
-import { SearchItem } from '../SearchItem'
+import { SearchItem, type SearchItemVariant } from '../SearchItem'
 import { unionMerge } from '@/lib/type-helpers'
 import styles from './EditorialSections.module.css'
 
@@ -13,6 +13,15 @@ type EditorialSectionEdge = {
       edges: Array<{ node: SearchResult | null }>
     }
   }
+}
+
+function getMaxItems(layout: SectionItemsLayout): number | undefined {
+  const s = layout.style as Record<string, string> | undefined
+  if (!s) return undefined
+  const rows = Number(s['--rows'])
+  if (!rows) return undefined
+  const cols = Number(s['--cols-l'] ?? s['--cols-m'] ?? s['--cols-base']) || 0
+  return cols > 0 ? rows * cols : rows * 8
 }
 
 function resolveListClass(layout: SectionItemsLayout): string {
@@ -49,16 +58,19 @@ export function EditorialSections({
         if (node.id.endsWith(':recent-searches')) return null
 
         const layout = resolveSectionItemsLayout(node.component)
+        const variant: SearchItemVariant =
+          layout.display === 'list' || layout.display === 'track-list' ? 'list' : 'card'
+        const maxItems = getMaxItems(layout)
 
         return (
           <section key={node.id}>
             <h2>{node.title}</h2>
             <ul className={resolveListClass(layout)} style={layout.style}>
-              {node.items.edges.map((item, index) => {
+              {node.items.edges.slice(0, maxItems).map((item, index) => {
                 if (!item.node) return null
                 const merged = unionMerge(item.node)
                 return (
-                  <SearchItem key={merged.id || index} item={merged} />
+                  <SearchItem key={merged.id || index} item={merged} variant={variant} />
                 )
               })}
             </ul>
