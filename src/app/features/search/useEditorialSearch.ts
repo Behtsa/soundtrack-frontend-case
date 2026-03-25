@@ -12,10 +12,12 @@ export function useEditorialSearch(params: EditorialSearchParams) {
     variables: { uri: params.uri, perSection: params.section ? 60 : 10 },
   })
 
+  const sections = result.data?.editorialSearch?.sections?.edges ?? null
+
   return {
-    result,
+    error: result.error,
     tabs: result.data?.editorialSearch?.tabs ?? null,
-    sections: result.data?.editorialSearch?.sections?.edges ?? null,
+    sections,
+    isLoading: result.fetching && !sections,
   }
 }
-
