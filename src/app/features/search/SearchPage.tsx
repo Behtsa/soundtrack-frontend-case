@@ -5,6 +5,7 @@ import { useEditorialSearch } from './useEditorialSearch'
 import { SearchForm } from './components/SearchForm'
 import { SearchTabs } from './components/SearchTabs'
 import { EditorialSections } from './components/EditorialSections'
+import { SectionsSkeleton } from './components/SectionsSkeleton'
 import { ErrorDisplay } from '@/components/ErrorDisplay'
 import { useDebounceValue } from '@/hooks/useDebounceValue'
 import { SEARCH_DEBOUNCE_TIME } from './searchConstants'
@@ -26,7 +27,7 @@ export function SearchPage(): ReactNode {
     [normalizedQuery, params.section],
   )
 
-  const { result, tabs, sections } = useEditorialSearch({
+  const { error, tabs, sections, isLoading } = useEditorialSearch({
     uri: searchUri,
     section: params.section,
   })
@@ -58,10 +59,13 @@ export function SearchPage(): ReactNode {
       />
 
       <div className={styles.results}>
-        <ErrorDisplay error={result.error} title="GraphQL Error" />
+        <ErrorDisplay error={error} title="GraphQL Error" />
 
         <SearchTabs params={params} tabs={tabs} />
-        <EditorialSections sections={sections} />
+        {isLoading
+          ? <SectionsSkeleton />
+          : <EditorialSections sections={sections} />
+        }
       </div>
     </main>
   )
