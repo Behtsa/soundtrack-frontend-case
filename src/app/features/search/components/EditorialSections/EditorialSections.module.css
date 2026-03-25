@@ -5,19 +5,14 @@
   overflow: hidden;
 }
 
-/* ── Pattern B: auto-fill cards ──────────────────────────────────────────── */
-/* ImageCards, PortraitCards / Grid without breakpoint hints.                */
-/* Browser decides how many columns fit given the min item width.            */
+/* Auto-fill grid — browser picks column count based on min item width. */
 .autoGrid {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
 }
 
-/* ── Pattern A: fixed cols per breakpoint ────────────────────────────────── */
-/* PortraitCards / ListItems with from= hints.                               */
-/* --cols-base, --cols-m, --cols-l are injected as inline style by the       */
-/* component from the API hint values.                                        */
+/* Fixed-cols grid — --cols-base / --cols-m / --cols-l set by the component. */
 .fixedGrid {
   display: grid;
   gap: 1rem;
@@ -36,26 +31,21 @@
   }
 }
 
-/* ── List layout ─────────────────────────────────────────────────────────── */
-/* ListItems without breakpoint hints or as the small-screen fallback.       */
+/* Single-column list. */
 .list {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* ── Track list ──────────────────────────────────────────────────────────── */
-/* TrackList hint: compact single-column list.                               */
+/* Compact track list. */
 .trackList {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-/* ── Pattern C: mixed layout (list at S/XS, cards at M+) ────────────────── */
-/* e.g. PortraitCards at from=l/m + ListItems at base (no from=).           */
-/* --cols-m, --cols-l come from the large-screen hint.                       */
-/* --rows-sm (if present) limits rows on small screens (inline style).       */
+/* List on small screens, card grid on medium+. */
 .mixedLayout {
   display: flex;
   flex-direction: column;
@@ -76,9 +66,7 @@
   }
 }
 
-/* ── Row limit ───────────────────────────────────────────────────────────── */
-/* Added by the component only when the API provides a rows hint.            */
-/* --rows is the visible row count; items beyond that are clipped.           */
+/* Applied when the API provides a rows hint; clips overflow. */
 .rowsLimited {
   grid-template-rows: repeat(var(--rows), auto);
   grid-auto-rows: 0;

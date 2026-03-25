@@ -29,14 +29,12 @@
   border-radius: 4px;
 }
 
-/* ── per-type styles ── */
+/* ── per-type overrides ── */
 
-/* Artist in list: small circular thumbnail (inherits base size) */
 .artist img {
   border-radius: 50%;
 }
 
-/* Artist in card: large centered circle image + name below */
 .card.artist .link {
   flex-direction: column;
   align-items: center;
@@ -67,7 +65,6 @@
   color: #6b7280;
 }
 
-.track {}
 
 .card.album .link,
 .card.playlist .link {
