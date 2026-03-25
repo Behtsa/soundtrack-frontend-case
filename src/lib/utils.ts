@@ -1,9 +1,8 @@
 import { graphql } from '@/graphql'
 
 /**
- * A GraphQL fragment for the `Displayable` GraphQL interface.
- * Many of the types available in the Soundtrack API implements this interface.
- * Fragments can be reused across multiple GraphQL documents.
+ * A GraphQL fragment for the `Displayable` interface.
+ * Most types in the Soundtrack API implement this interface.
  */
 export const DisplayableFragment = graphql(/* GraphQL */ `
   fragment DisplayableFragment on Displayable {
@@ -24,7 +23,7 @@ export const DisplayableFragment = graphql(/* GraphQL */ `
   }
 `)
 
-/** Generates a valid URL for a displayable image utilizing the `placeholder` field. */
+/** Builds an image URL from the `placeholder` template field. */
 export function displayImageUrl(
   display:
     | { image?: { placeholder?: string | null } | null }
