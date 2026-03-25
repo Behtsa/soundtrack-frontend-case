@@ -49,7 +49,7 @@ export function SearchPage(): ReactNode {
   }, [normalizedQuery])
 
   return (
-    <main>
+    <main className={styles.pageMain}>
       <SearchForm
         params={params}
         inputValue={searchText}

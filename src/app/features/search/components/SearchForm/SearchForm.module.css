@@ -1,0 +1,42 @@
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  max-width: 40rem;
+  margin: 1rem auto;
+}
+
+.searchIcon {
+  color: #9ca3af;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #111;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  display: none;
+}
+
+.submitButton {
+  display: none;
+}
